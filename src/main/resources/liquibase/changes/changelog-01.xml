@@ -79,4 +79,18 @@
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="SECTOR_ID" baseTableName="RESERVATION" constraintName="CONSTRAINT_232" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SECTOR" validate="true"/>
     </changeSet>
+    <changeSet author="dmitriyf" id="sector-inserts">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM SECTOR;
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="h2"
+             splitStatements="true"
+             stripComments="true">
+            insert into sector (id, name) values (1, 'sector 1');
+            insert into sector (id, name) values (2, 'sector 2');
+            insert into sector (id, name) values (3, 'sector 3');
+        </sql>
+    </changeSet>
 </databaseChangeLog>
