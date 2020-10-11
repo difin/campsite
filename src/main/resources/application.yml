@@ -37,3 +37,5 @@ spring:
     user: sa
     password: password
 
+app:
+  spots-num: 3
