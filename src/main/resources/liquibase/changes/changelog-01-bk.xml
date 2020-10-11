@@ -1,0 +1,120 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="dmitriyf (generated)" id="1602382670604-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="CLIENT"/>
+            </not>
+        </preConditions>
+        <createTable tableName="CLIENT">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_7"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="EMAIL" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="RESERVATION"/>
+            </not>
+        </preConditions>
+        <createTable tableName="RESERVATION">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_2"/>
+            </column>
+            <column name="START_DATE" type="INT"/>
+            <column name="END_DATE" type="INT"/>
+            <column name="CLIENT_ID" type="INT"/>
+            <column name="AREA_ID" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="AREA"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AREA">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_9"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="CONSTRAINT_INDEX_2"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="CONSTRAINT_INDEX_2" tableName="RESERVATION">
+            <column name="CLIENT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="CONSTRAINT_INDEX_23"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="CONSTRAINT_INDEX_23" tableName="RESERVATION">
+            <column name="AREA_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="RESERVATION" foreignKeyName="CONSTRAINT_23"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="CLIENT_ID" baseTableName="RESERVATION" constraintName="CONSTRAINT_23" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CLIENT" validate="true"/>
+    </changeSet>
+    <changeSet author="dmitriyf (generated)" id="1602382670604-7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="RESERVATION" foreignKeyName="CONSTRAINT_232"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="AREA_ID" baseTableName="RESERVATION" constraintName="CONSTRAINT_232" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="AREA" validate="true"/>
+    </changeSet>
+    <changeSet author="dmitriyf" id="sector-inserts">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM AREA;
+            </sqlCheck>
+        </preConditions>
+        <sql dbms="h2"
+             splitStatements="true"
+             stripComments="true">
+            insert into area (id, name) values (1, 'area 1');
+            insert into area (id, name) values (2, 'area 2');
+            insert into area (id, name) values (3, 'area 3');
+        </sql>
+    </changeSet>
+    <changeSet  author="dmitriyf"  id="client_id_seq">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="client_id_seq"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="client_id_seq"/>
+    </changeSet>
+    <changeSet  author="dmitriyf"  id="reservation_id_seq">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="reservation_id_seq"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="reservation_id_seq"/>
+    </changeSet>
+    <changeSet  author="dmitriyf"  id="area_id_seq">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="area_id_seq"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="area_id_seq"/>
+    </changeSet>
+</databaseChangeLog>

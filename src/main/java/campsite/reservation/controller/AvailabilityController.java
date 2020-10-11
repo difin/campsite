@@ -1,5 +1,7 @@
 package campsite.reservation.controller;
 
+import campsite.reservation.service.AvailabilityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,13 @@ import java.time.Month;
 
 @Controller
 public class AvailabilityController {
+
+	private final AvailabilityService availabilityService;
+
+	@Autowired
+	public AvailabilityController(AvailabilityService availabilityService) {
+		this.availabilityService = availabilityService;
+	}
 
 	@GetMapping(
 			path = "available-dates",
@@ -36,12 +45,6 @@ public class AvailabilityController {
 	)
 	public Flux<LocalDate> getAvailableDates2() {
 
-		return Flux.fromArray(new LocalDate[]{
-				LocalDate.of(2020, Month.JANUARY, 8),
-				LocalDate.of(2020, Month.JANUARY, 8),
-				LocalDate.of(2020, Month.JANUARY, 9),
-				LocalDate.of(2020, Month.JANUARY, 9),
-				LocalDate.of(2020, Month.JANUARY, 10),
-		});
+		return Flux.fromIterable(availabilityService.getAvailableDates());
 	}
 }
