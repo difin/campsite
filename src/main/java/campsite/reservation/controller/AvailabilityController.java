@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
-import java.time.Month;
 
 @Controller
 public class AvailabilityController {
@@ -32,19 +31,15 @@ public class AvailabilityController {
 			@RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MMM-dd")
 					LocalDate endDate) {
 
-		return Flux.fromArray(new LocalDate[]{
-				LocalDate.of(2020, Month.JANUARY, 8),
-				LocalDate.of(2020, Month.JANUARY, 9),
-				LocalDate.of(2020, Month.JANUARY, 10),
-		});
+		return availabilityService.getAvailableDates(startDate, endDate);
 	}
 
 	@GetMapping(
 			path = "available-dates",
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<LocalDate> getAvailableDates2() {
+	public Flux<LocalDate> getAvailableDatesDefaultRange() {
 
-		return Flux.fromIterable(availabilityService.getAvailableDates());
+		return availabilityService.getAvailableDates();
 	}
 }

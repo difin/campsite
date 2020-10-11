@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -12,7 +13,9 @@ public interface ManagedDateRepository extends JpaRepository<ManagedDate, Intege
 
     @Query("select md                       " +
            "from ManagedDate md             " +
-           "where md.reservedDates.size < :spotsNum "
+           "where md.reservedDates.size < :spotsNum " +
+           "and md.date >= :startDate       " +
+           "and md.date <= :endDate         "
     )
-    List<ManagedDate> getAvailableDates(int spotsNum);
+    List<ManagedDate> getAvailableDates(int spotsNum, LocalDate startDate, LocalDate endDate);
 }
