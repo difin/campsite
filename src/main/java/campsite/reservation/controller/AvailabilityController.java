@@ -1,5 +1,6 @@
 package campsite.reservation.controller;
 
+import campsite.reservation.model.AvailableDateModel;
 import campsite.reservation.service.AvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,7 +26,7 @@ public class AvailabilityController {
 			params = {"startDate" , "endDate"},
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<LocalDate> getAvailableDates(
+	public Flux<AvailableDateModel> getAvailableDates(
 			@RequestParam(name="startDate") @DateTimeFormat(pattern = "yyyy-MMM-dd")
 					LocalDate startDate,
 			@RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MMM-dd")
@@ -38,7 +39,7 @@ public class AvailabilityController {
 			path = "available-dates",
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<LocalDate> getAvailableDatesDefaultRange() {
+	public Flux<AvailableDateModel> getAvailableDatesDefaultRange() {
 
 		return availabilityService.getAvailableDates();
 	}

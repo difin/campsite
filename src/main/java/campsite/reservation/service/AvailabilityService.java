@@ -1,11 +1,12 @@
 package campsite.reservation.service;
 
+import campsite.reservation.model.AvailableDateModel;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 
 public interface AvailabilityService {
 
-   Flux<LocalDate> getAvailableDates();
-   Flux<LocalDate> getAvailableDates(LocalDate startDate, LocalDate endDate);
+   Flux<AvailableDateModel> getAvailableDates();
+   Flux<AvailableDateModel> getAvailableDates(LocalDate startDate, LocalDate endDate);
 }
