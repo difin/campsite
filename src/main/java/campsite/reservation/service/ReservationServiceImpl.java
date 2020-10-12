@@ -25,11 +25,13 @@ public class ReservationServiceImpl implements ReservationService {
     private final ModelConverter modelConverter;
     private final AvailabilityService availabilityService;
     private final BookingDatesValidator bookingDatesValidator;
+    private final TransactionService transactionService;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
                                   AvailabilityService availabilityService,
+                                  TransactionService transactionService,
                                   ModelConverter modelConverter,
                                   BookingDatesValidator bookingDatesValidator){
         this.reservationRepository = reservationRepository;
@@ -37,11 +39,13 @@ public class ReservationServiceImpl implements ReservationService {
         this.availabilityService = availabilityService;
         this.reservedDateRepository = reservedDateRepository;
         this.bookingDatesValidator = bookingDatesValidator;
+        this.transactionService = transactionService;
     }
 
     public Mono<BookingReference> reserve(ReservationPayload payload) {
 
-        return Mono
+        return transactionService.execTransaction(() ->
+            Mono
             .fromFuture(
                 CompletableFuture.supplyAsync(() ->
                 {
@@ -70,6 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
                     return reservation;
                 })
             )
-            .map(modelConverter::reservationEntityToDTO);
+            .map(modelConverter::reservationEntityToDTO)
+        );
     }
 }
