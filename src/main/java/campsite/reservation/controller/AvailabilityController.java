@@ -3,6 +3,7 @@ package campsite.reservation.controller;
 import campsite.reservation.model.out.AvailableDateModel;
 import campsite.reservation.model.in.BookingDates;
 import campsite.reservation.service.AvailabilityService;
+import campsite.reservation.validation.BookingDatesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -13,10 +14,13 @@ import reactor.core.publisher.Flux;
 public class AvailabilityController {
 
 	private final AvailabilityService availabilityService;
+	private final BookingDatesValidator bookingDatesValidator;
 
 	@Autowired
-	public AvailabilityController(AvailabilityService availabilityService) {
+	public AvailabilityController(AvailabilityService availabilityService,
+								  BookingDatesValidator bookingDatesValidator) {
 		this.availabilityService = availabilityService;
+		this.bookingDatesValidator = bookingDatesValidator;
 	}
 
 	@GetMapping(
@@ -29,7 +33,8 @@ public class AvailabilityController {
 			@RequestParam(name="departure") String departure) {
 
 		return availabilityService
-				.getAvailableDates(new BookingDates(arrival, departure));
+				.getAvailableDates(
+						bookingDatesValidator.validateDates(new BookingDates(arrival, departure)));
 	}
 
 	@GetMapping(

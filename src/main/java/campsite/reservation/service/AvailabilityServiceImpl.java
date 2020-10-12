@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +22,6 @@ import java.util.stream.Stream;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
-@Validated
 public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final ManagedDateRepository managedDateRepository;
@@ -49,7 +47,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
             );
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(@Valid BookingDates availableDatesRange) {
+    public Flux<AvailableDateModel> getAvailableDates(BookingDates availableDatesRange) {
 
         return Mono
                 .fromFuture(
