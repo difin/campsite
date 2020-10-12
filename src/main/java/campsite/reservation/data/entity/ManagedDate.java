@@ -24,6 +24,6 @@ public class ManagedDate {
 	private LocalDate date;
 
 	@Getter
-	@OneToMany(mappedBy = "managedDate", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "managedDate", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	List<ReservedDate> reservedDates;
 }

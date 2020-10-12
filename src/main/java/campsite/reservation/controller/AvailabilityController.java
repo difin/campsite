@@ -1,7 +1,7 @@
 package campsite.reservation.controller;
 
 import campsite.reservation.model.out.AvailableDateModel;
-import campsite.reservation.model.in.BookingDates;
+import campsite.reservation.model.in.RequestDates;
 import campsite.reservation.service.AvailabilityService;
 import campsite.reservation.validation.BookingDatesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class AvailabilityController {
 
 		return availabilityService
 				.getAvailableDates(
-						bookingDatesValidator.validateDates(new BookingDates(arrival, departure)));
+						bookingDatesValidator.validate(new RequestDates(arrival, departure)));
 	}
 
 	@GetMapping(

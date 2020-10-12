@@ -4,12 +4,11 @@ import campsite.reservation.data.entity.ManagedDate;
 import campsite.reservation.data.repository.ManagedDateRepository;
 import campsite.reservation.model.out.AvailableDateModel;
 import campsite.reservation.model.out.ModelConverter;
-import campsite.reservation.model.in.BookingDates;
+import campsite.reservation.model.in.RequestDates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,22 +40,27 @@ public class AvailabilityServiceImpl implements AvailabilityService {
    public Flux<AvailableDateModel> getAvailableDates(){
 
         return getAvailableDates(
-                new BookingDates(
+                new RequestDates(
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusMonths(1))
             );
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(BookingDates availableDatesRange) {
+    public Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates) {
 
         return Mono
                 .fromFuture(
                         CompletableFuture.supplyAsync(() ->
-                                managedDateRepository.getAvailableDates(spotsNum,
-                                        availableDatesRange.getArrivalAsDate(),
-                                        availableDatesRange.getDepartureAsDate())))
+                                getAvailableDatesBlocking(requestDates)))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
+    }
+
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
+
+        return managedDateRepository.getAvailableDates(spotsNum,
+                                        requestDates.getArrivalAsDate(),
+                                        requestDates.getDepartureAsDate().minusDays(1));
     }
 
     @Scheduled(cron = "0 0 0 * * *")
