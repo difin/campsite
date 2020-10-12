@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -25,13 +24,13 @@ public class ReservationServiceImpl implements ReservationService {
     private final ModelConverter modelConverter;
     private final AvailabilityService availabilityService;
     private final BookingDatesValidator bookingDatesValidator;
-    private final TransactionService transactionService;
+    private final ReactiveExecutionService reactiveExecutionService;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
                                   AvailabilityService availabilityService,
-                                  TransactionService transactionService,
+                                  ReactiveExecutionService reactiveExecutionService,
                                   ModelConverter modelConverter,
                                   BookingDatesValidator bookingDatesValidator){
         this.reservationRepository = reservationRepository;
@@ -39,42 +38,37 @@ public class ReservationServiceImpl implements ReservationService {
         this.availabilityService = availabilityService;
         this.reservedDateRepository = reservedDateRepository;
         this.bookingDatesValidator = bookingDatesValidator;
-        this.transactionService = transactionService;
+        this.reactiveExecutionService = reactiveExecutionService;
     }
 
     public Mono<BookingReference> reserve(ReservationPayload payload) {
 
-        return transactionService.execTransaction(() ->
-            Mono
-            .fromFuture(
-                CompletableFuture.supplyAsync(() ->
-                {
-                    List<ManagedDate> availableDates = availabilityService.getAvailableDatesBlocking(payload.getBookingDates());
+        return reactiveExecutionService.execTransaction(() ->
+            {
+                List<ManagedDate> availableDates = availabilityService.getAvailableDatesBlocking(payload.getBookingDates());
 
-                    bookingDatesValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
+                bookingDatesValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
 
-                    Reservation reservation = new Reservation();
+                Reservation reservation = new Reservation();
 
-                    reservation.setName(payload.getName());
-                    reservation.setEmail(payload.getEmail());
-                    reservation.setBookingRef(UUID.randomUUID());
+                reservation.setName(payload.getName());
+                reservation.setEmail(payload.getEmail());
+                reservation.setBookingRef(UUID.randomUUID());
 
-                    reservationRepository.save(reservation);
+                reservationRepository.save(reservation);
 
-                    availableDates
-                        .forEach(managedDate -> {
-                                ReservedDate reservedDate = new ReservedDate();
-                                reservedDate.setManagedDate(managedDate);
-                                reservedDate.setReservationId(reservation);
+                availableDates
+                    .forEach(managedDate -> {
+                            ReservedDate reservedDate = new ReservedDate();
+                            reservedDate.setManagedDate(managedDate);
+                            reservedDate.setReservationId(reservation);
 
-                                reservedDateRepository.save(reservedDate);
-                            }
-                        );
+                            reservedDateRepository.save(reservedDate);
+                        }
+                    );
 
-                    return reservation;
-                })
-            )
-            .map(modelConverter::reservationEntityToDTO)
-        );
+                return reservation;
+            })
+        .map(t -> modelConverter.reservationEntityToDTO((Reservation)t));
     }
 }

@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,15 +22,18 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final ManagedDateRepository managedDateRepository;
+    private final ReactiveExecutionService reactiveExecutionService;
     private final int spotsNum;
     private final ModelConverter modelConverter;
 
     @Autowired
     public AvailabilityServiceImpl(ManagedDateRepository managedDateRepository,
+                                   ReactiveExecutionService reactiveExecutionService,
                                    ModelConverter modelConverter,
                                    @Value("${app.spots-num}") int spotsNum) {
 
         this.managedDateRepository = managedDateRepository;
+        this.reactiveExecutionService = reactiveExecutionService;
         this.modelConverter = modelConverter;
         this.spotsNum = spotsNum;
     }
@@ -48,12 +49,9 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     public Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates) {
 
-        return Mono
-                .fromFuture(
-                        CompletableFuture.supplyAsync(() ->
-                                getAvailableDatesBlocking(requestDates)))
+        return reactiveExecutionService.execute(() -> getAvailableDatesBlocking(requestDates))
                 .flatMapIterable(t -> t)
-                .map(modelConverter::managedDateEntityToDTO);
+                .map(t -> modelConverter.managedDateEntityToDTO((ManagedDate)t));
     }
 
     public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
