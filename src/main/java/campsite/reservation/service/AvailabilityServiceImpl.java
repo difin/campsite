@@ -55,8 +55,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
                 .fromFuture(
                         CompletableFuture.supplyAsync(() ->
                                 managedDateRepository.getAvailableDates(spotsNum,
-                                        availableDatesRange.getArrival(),
-                                        availableDatesRange.getDeparture())))
+                                        availableDatesRange.getArrivalAsDate(),
+                                        availableDatesRange.getDepartureAsDate())))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }

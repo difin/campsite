@@ -6,14 +6,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class DateWithinOneMonthValidator implements ConstraintValidator<DateWithinOneMonth, String> {
-    public void initialize(DateWithinOneMonth constraint) {
+public class FutureReservationDateValidator implements ConstraintValidator<FutureReservationDate, String> {
+    public void initialize(FutureReservationDate constraint) {
     }
 
     public boolean isValid(String date, ConstraintValidatorContext context) {
 
         try{
-            return stringToDate(date).isBefore(LocalDate.now().plusMonths(1));
+            return stringToDate(date).isAfter(LocalDate.now().plusDays(1));
         } catch (DateTimeParseException e) {
             // if date is not parsable, another more precise validation error will be shows to user
             return true;

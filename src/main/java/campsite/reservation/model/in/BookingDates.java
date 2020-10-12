@@ -2,29 +2,56 @@ package campsite.reservation.model.in;
 
 import campsite.reservation.validation.DateFormatValid;
 import campsite.reservation.validation.DateWithinOneMonth;
-import lombok.AllArgsConstructor;
+import campsite.reservation.validation.FutureReservationDate;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-@AllArgsConstructor
-@Getter
 @Setter
+@Getter
 @NotNull
+@NoArgsConstructor
 public class BookingDates {
 
-//    @DateTimeFormat(pattern = "yyyy-MMM-dd")
-    @Future(message = "Arrival date must be no earlier then tomorrow")
-//    @DateFormatValid(message = "Date format must be yyyy-MMM-dd")
-    private LocalDate arrival;
+    public BookingDates(LocalDate arrival,  LocalDate departure) {
+        this.arrival = dateToString(arrival);
+        this.departure = dateToString(departure);
+    }
 
-//    @DateTimeFormat(pattern = "yyyy-MMM-dd")
-    @Future(message = "Departure date cannot be in the past")
-//    @DateFormatValid(message = "Date format must be yyyy-MMM-dd")
+    public BookingDates(String arrival,
+                        String departure) {
+        this.arrival = arrival;
+        this.departure = departure;
+    }
+
+    @DateFormatValid(message = "Arrival date format must be yyyy-MMM-dd")
+    @FutureReservationDate(message = "Arrival date must be no earlier then tomorrow")
+    private String arrival;
+
+    @DateFormatValid(message = "Departure date format must be yyyy-MMM-dd")
+    @FutureReservationDate(message = "Departure date cannot be in the past")
     @DateWithinOneMonth(message = "End date must be within one month")
-    private LocalDate departure;
+    private String departure;
+
+    public LocalDate getArrivalAsDate(){
+        return stringToDate(arrival);
+    }
+
+    public LocalDate getDepartureAsDate(){
+        return stringToDate(departure);
+    }
+
+    private LocalDate stringToDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        return LocalDate.parse(date, formatter);
+    }
+
+    private String dateToString(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        return date.format(formatter);
+    }
 }

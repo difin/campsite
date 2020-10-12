@@ -10,11 +10,11 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Constraint(validatedBy = DateFormatValidator.class)
+@Constraint(validatedBy = FutureReservationDateValidator.class)
 @Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Documented
-public @interface DateFormatValid {
+public @interface FutureReservationDate {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     String message();

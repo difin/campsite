@@ -12,7 +12,16 @@ public class RestErrorHandler {
     @ExceptionHandler
     public ResponseEntity<CampsiteErrorMessage> handleAllExceptions(Exception exception,
                                                                     WebRequest webRequest) {
-        CampsiteErrorMessage campsiteErrorMessage = new CampsiteErrorMessage(exception.getMessage());
+
+        String errorMessage = exception.getMessage().trim();
+
+        if (errorMessage.contains("default message"))
+            errorMessage = errorMessage.substring(errorMessage.lastIndexOf("default message") + 15).trim();
+
+        if (errorMessage.startsWith("[") && errorMessage.endsWith("]"))
+            errorMessage = errorMessage.substring(1, errorMessage.length()-1);
+
+        CampsiteErrorMessage campsiteErrorMessage = new CampsiteErrorMessage(errorMessage);
         return new ResponseEntity<>(campsiteErrorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
