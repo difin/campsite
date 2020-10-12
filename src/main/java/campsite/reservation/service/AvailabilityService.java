@@ -10,4 +10,5 @@ public interface AvailabilityService {
 
    Flux<AvailableDateModel> getAvailableDates();
    Flux<AvailableDateModel> getAvailableDates(@Valid RequestedDatesRange availableDatesRange);
+   void generateManagedDates();
 }
