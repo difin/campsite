@@ -11,11 +11,11 @@ import java.util.List;
 @Repository
 public interface ManagedDateRepository extends JpaRepository<ManagedDate, Integer> {
 
-    @Query("select md                       " +
-           "from ManagedDate md             " +
+    @Query("select md                               " +
+           "from ManagedDate md                     " +
            "where md.reservedDates.size < :spotsNum " +
-           "and md.date >= :startDate       " +
-           "and md.date <= :endDate         "
+           "and md.date >= :startDate               " +
+           "and md.date <= :endDate                 "
     )
     List<ManagedDate> getAvailableDates(int spotsNum, LocalDate startDate, LocalDate endDate);
 }

@@ -1,19 +1,22 @@
 package campsite.reservation.service;
 
-import campsite.reservation.data.entity.ManagedDate;
 import campsite.reservation.data.repository.ManagedDateRepository;
-import campsite.reservation.model.AvailableDateModel;
-import campsite.reservation.model.ModelConverter;
+import campsite.reservation.model.out.AvailableDateModel;
+import campsite.reservation.model.out.ModelConverter;
+import campsite.reservation.model.in.RequestedDatesRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Validated
 public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final ManagedDateRepository managedDateRepository;
@@ -33,18 +36,21 @@ public class AvailabilityServiceImpl implements AvailabilityService {
    public Flux<AvailableDateModel> getAvailableDates(){
 
         return getAvailableDates(
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusMonths(1)
+                new RequestedDatesRange(
+                    LocalDate.now().plusDays(1),
+                    LocalDate.now().plusMonths(1))
             );
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(LocalDate startDate, LocalDate endDate){
+    public Flux<AvailableDateModel> getAvailableDates(@Valid RequestedDatesRange availableDatesRange) {
 
         return Mono
                 .fromFuture(
-                        CompletableFuture.supplyAsync(() -> managedDateRepository.getAvailableDates(spotsNum, startDate, endDate))
-                )
+                        CompletableFuture.supplyAsync(() ->
+                                managedDateRepository.getAvailableDates(spotsNum,
+                                        availableDatesRange.getStartDate(),
+                                        availableDatesRange.getEndDate())))
                 .flatMapIterable(t -> t)
-                .map(t -> modelConverter.managedDateEntityToDTO(t));
+                .map(modelConverter::managedDateEntityToDTO);
     }
 }

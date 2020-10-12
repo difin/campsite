@@ -1,4 +1,4 @@
-package campsite.reservation.model;
+package campsite.reservation.model.out;
 
 import campsite.reservation.data.entity.ManagedDate;
 import org.springframework.stereotype.Component;

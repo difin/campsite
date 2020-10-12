@@ -1,4 +1,4 @@
-package campsite.reservation.model;
+package campsite.reservation.model.out;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
