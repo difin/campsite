@@ -15,6 +15,7 @@ public class ManagedDate {
 	@Setter
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "managed_date_seq")
 	@SequenceGenerator(name = "managed_date_seq", sequenceName = "managed_date_id_seq", allocationSize = 1)
+	@Column(nullable = false, insertable = false, updatable = false)
 	private int id;
 
 	@Getter

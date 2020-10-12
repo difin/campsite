@@ -4,7 +4,7 @@ import campsite.reservation.data.entity.ManagedDate;
 import campsite.reservation.data.repository.ManagedDateRepository;
 import campsite.reservation.model.out.AvailableDateModel;
 import campsite.reservation.model.out.ModelConverter;
-import campsite.reservation.model.in.RequestedDatesRange;
+import campsite.reservation.model.in.BookingDates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,29 +43,29 @@ public class AvailabilityServiceImpl implements AvailabilityService {
    public Flux<AvailableDateModel> getAvailableDates(){
 
         return getAvailableDates(
-                new RequestedDatesRange(
+                new BookingDates(
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusMonths(1))
             );
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(@Valid RequestedDatesRange availableDatesRange) {
+    public Flux<AvailableDateModel> getAvailableDates(@Valid BookingDates availableDatesRange) {
 
         return Mono
                 .fromFuture(
                         CompletableFuture.supplyAsync(() ->
                                 managedDateRepository.getAvailableDates(spotsNum,
-                                        availableDatesRange.getStartDate(),
-                                        availableDatesRange.getEndDate())))
+                                        availableDatesRange.getArrival(),
+                                        availableDatesRange.getDeparture())))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    @Scheduled(cron = "0 0 1 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void generateManagedDates() {
 
         LocalDate start = LocalDate.now().plusDays(1);
-        LocalDate end =  LocalDate.now().plusMonths(1);
+        LocalDate end = LocalDate.now().plusMonths(1);
 
         List<LocalDate> existingDates =
                 managedDateRepository

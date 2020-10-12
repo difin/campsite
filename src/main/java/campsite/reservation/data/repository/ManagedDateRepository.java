@@ -14,16 +14,16 @@ public interface ManagedDateRepository extends JpaRepository<ManagedDate, Intege
     @Query("select md                               " +
            "from ManagedDate md                     " +
            "where md.reservedDates.size < :spotsNum " +
-           "and md.date >= :startDate               " +
-           "and md.date <= :endDate                 "
+           "and md.date >= :arrival               " +
+           "and md.date <= :departure                 "
     )
-    List<ManagedDate> getAvailableDates(int spotsNum, LocalDate startDate, LocalDate endDate);
+    List<ManagedDate> getAvailableDates(int spotsNum, LocalDate arrival, LocalDate departure);
 
     @Query("select md                                " +
            "from ManagedDate md                     " +
-           "where md.date >= :startDate             " +
-           "and md.date <= :endDate                 "
+           "where md.date >= :arrival             " +
+           "and md.date <= :departure                 "
     )
-    List<ManagedDate> getManagedDates(LocalDate startDate, LocalDate endDate);
+    List<ManagedDate> getManagedDates(LocalDate arrival, LocalDate departure);
 
 }

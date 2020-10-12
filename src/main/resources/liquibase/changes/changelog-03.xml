@@ -1,0 +1,50 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    
+    <changeSet author="dmitriyf" id="RESERVED_DATE_CR">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="RESERVED_DATE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="RESERVED_DATE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="RESERVED_DATE_PK"/>
+            </column>
+            <column name="MANAGED_DATE_ID" type="INT"/>
+            <column name="RESERVATION_ID" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet  author="dmitriyf"  id="RESERVED_DATE_SEQ_CR">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="RESERVED_DATE_ID_SEQ"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="RESERVED_DATE_ID_SEQ"/>
+    </changeSet>
+
+    <changeSet author="dmitriyf" id="RESERVED_DATE_FK1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="RESERVED_DATE" foreignKeyName="RESERVED_DATE_FK1"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="MANAGED_DATE_ID" baseTableName="RESERVED_DATE" constraintName="RESERVED_DATE_FK1"
+                                 deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="MANAGED_DATE" validate="true"/>
+    </changeSet>
+
+    <changeSet author="dmitriyf" id="RESERVATION_FK2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="RESERVED_DATE" foreignKeyName="RESERVED_DATE_FK2"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="RESERVATION_ID" baseTableName="RESERVED_DATE" constraintName="RESERVED_DATE_FK2"
+                                 deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="RESERVATION" validate="true"/>
+    </changeSet>
+    
+</databaseChangeLog>

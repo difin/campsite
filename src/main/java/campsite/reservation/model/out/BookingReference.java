@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.UUID;
 
 @AllArgsConstructor
-public class AvailableDateModel {
+public class BookingReference {
 
     @Getter
     @Setter
-    private LocalDate availableDate;
+    private UUID bookingReference;
 }
