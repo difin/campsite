@@ -4,6 +4,7 @@ import campsite.reservation.validation.DateFormatValid;
 import campsite.reservation.validation.DateWithinOneMonth;
 import campsite.reservation.validation.DepartureAfterArrivalValid;
 import campsite.reservation.validation.FutureReservationDate;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -24,10 +25,12 @@ public class RequestDates {
         this.departure = dateToString(departure);
     }
 
+    @ApiModelProperty(position = 1, example = "2020-Oct-10")
     @DateFormatValid(message = "{campsite.validation.illegal.arrival.date.format}")
     @FutureReservationDate(message = "Arrival {campsite.validation.date.cannot.be.in.the.past}")
     private String arrival;
 
+    @ApiModelProperty(position = 2, example = "2020-Oct-10")
     @DateFormatValid(message = "{campsite.validation.illegal.departure.date.format}")
     @FutureReservationDate(message = "Departure {campsite.validation.date.cannot.be.in.the.past}")
     @DateWithinOneMonth(message = "{campsite.validation.departure.date.too.far}")

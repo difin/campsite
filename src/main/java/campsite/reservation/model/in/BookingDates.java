@@ -1,6 +1,7 @@
 package campsite.reservation.model.in;
 
 import campsite.reservation.validation.BookingLengthLimit;
+import io.swagger.annotations.ApiModel;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @BookingLengthLimit(message = "{campsite.validation.booking.length.too.long}")
+@ApiModel(description = "allowed dates range = 3 days max")
 public class BookingDates extends RequestDates{
 
     public BookingDates(LocalDate arrival, LocalDate departure) {

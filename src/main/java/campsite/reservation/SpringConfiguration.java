@@ -11,12 +11,18 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.concurrent.Executors;
 
 @Configuration
 @EnableScheduling
 @EnableTransactionManagement
+@EnableSwagger2
 public class SpringConfiguration {
 
     @Value("${spring.datasource.hikari.maximum-pool-size}")
@@ -49,5 +55,14 @@ public class SpringConfiguration {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
         return bean;
+    }
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("campsite.reservation"))
+                .paths(PathSelectors.any())
+                .build();
     }
 }
