@@ -9,7 +9,7 @@ import campsite.reservation.model.ModelConverter;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.out.BookingReference;
 import campsite.reservation.service.AvailabilityService;
-import campsite.reservation.service.ReactiveExecutionService;
+import campsite.reservation.service.common.ReactiveExecutionService;
 import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

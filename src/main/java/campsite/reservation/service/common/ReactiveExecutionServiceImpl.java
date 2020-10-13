@@ -1,4 +1,4 @@
-package campsite.reservation.service;
+package campsite.reservation.service.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

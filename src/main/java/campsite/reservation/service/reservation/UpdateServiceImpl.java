@@ -6,7 +6,7 @@ import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.internal.CancellationStatus;
 import campsite.reservation.model.internal.UpdateStatus;
 import campsite.reservation.model.out.ActionResult;
-import campsite.reservation.service.ReactiveExecutionService;
+import campsite.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

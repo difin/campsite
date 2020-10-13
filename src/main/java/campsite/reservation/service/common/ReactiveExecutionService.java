@@ -1,4 +1,4 @@
-package campsite.reservation.service;
+package campsite.reservation.service.common;
 
 import reactor.core.publisher.Mono;
 
