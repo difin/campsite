@@ -27,14 +27,14 @@ class CancellationServiceImplTest {
     @InjectMocks
     CancellationServiceImpl cancellationService;
 
+    int id = 1;
+    String name = "some name";
+    String email = "some email";
+    String bookingRef = "some booking reference";
+
     @DisplayName("When cancelling existing reservation then it gets cancelled successfully")
     @Test
     void cancellingExistingReservation(){
-
-        int id = 1;
-        String name = "some name";
-        String email = "some email";
-        String bookingRef = "some booking reference";
 
         BookingReferencePayload payload = new BookingReferencePayload(bookingRef);
 
@@ -52,7 +52,6 @@ class CancellationServiceImplTest {
     @Test
     void cancellingAbsentReservation(){
 
-        String bookingRef = "some booking reference";
         BookingReferencePayload payload = new BookingReferencePayload(bookingRef);
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(null);
