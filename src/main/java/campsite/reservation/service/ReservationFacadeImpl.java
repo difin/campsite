@@ -14,9 +14,9 @@ import reactor.core.publisher.Mono;
 @Service
 public class ReservationFacadeImpl implements ReservationFacade {
 
-    private final ReservationService reservationService;
-    private final CancellationService cancellationService;
-    private final UpdateServiceImpl updateService;
+    private ReservationService reservationService;
+    private CancellationService cancellationService;
+    private UpdateServiceImpl updateService;
 
     @Autowired
     public ReservationFacadeImpl(ReservationService reservationService,

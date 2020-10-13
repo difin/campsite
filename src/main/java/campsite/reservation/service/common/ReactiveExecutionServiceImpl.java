@@ -11,8 +11,8 @@ import java.util.function.Supplier;
 @Service
 public class ReactiveExecutionServiceImpl implements ReactiveExecutionService {
 
-    private final TransactionTemplate transactionTemplate;
-    private final Scheduler scheduler;
+    private TransactionTemplate transactionTemplate;
+    private Scheduler scheduler;
 
     @Autowired
     public ReactiveExecutionServiceImpl(TransactionTemplate transactionTemplate,

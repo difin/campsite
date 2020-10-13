@@ -13,8 +13,8 @@ import reactor.core.publisher.Flux;
 @Controller
 public class AvailabilityController {
 
-	private final AvailabilityFacade availabilityFacade;
-	private final MethodParamValidator methodParamValidator;
+	private AvailabilityFacade availabilityFacade;
+	private MethodParamValidator methodParamValidator;
 
 	@Autowired
 	public AvailabilityController(AvailabilityFacade availabilityFacade,

@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class CancellationServiceImpl implements CancellationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservedDateRepository reservedDateRepository;
-    private final ReactiveExecutionService reactiveExecutionService;
-    private final ModelConverter modelConverter;
+    private ReservationRepository reservationRepository;
+    private ReservedDateRepository reservedDateRepository;
+    private ReactiveExecutionService reactiveExecutionService;
+    private ModelConverter modelConverter;
 
     @Autowired
     public CancellationServiceImpl(ReservationRepository reservationRepository,

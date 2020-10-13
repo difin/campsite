@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 public class AvailabilityFacadeImpl implements AvailabilityFacade {
 
-    private final AvailableDatesVerifierService availableDatesVerifierService;
-    private final ManagedDatesCreationBatchService managedDatesCreationBatchService;
+    private AvailableDatesVerifierService availableDatesVerifierService;
+    private ManagedDatesCreationBatchService managedDatesCreationBatchService;
 
     @Autowired
     public AvailabilityFacadeImpl(AvailableDatesVerifierService availableDatesVerifierService,

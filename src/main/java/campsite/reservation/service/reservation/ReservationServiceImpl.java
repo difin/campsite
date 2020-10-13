@@ -22,12 +22,12 @@ import java.util.UUID;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservedDateRepository reservedDateRepository;
-    private final AvailabilityFacade availabilityFacade;
-    private final ReactiveExecutionService reactiveExecutionService;
-    private final ModelConverter modelConverter;
-    private final MethodParamValidator methodParamValidator;
+    private ReservationRepository reservationRepository;
+    private ReservedDateRepository reservedDateRepository;
+    private AvailabilityFacade availabilityFacade;
+    private ReactiveExecutionService reactiveExecutionService;
+    private ModelConverter modelConverter;
+    private MethodParamValidator methodParamValidator;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,

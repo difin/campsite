@@ -17,10 +17,11 @@ import java.util.List;
 @Service
 public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifierService {
 
-    private final ManagedDateRepository managedDateRepository;
-    private final ReactiveExecutionService reactiveExecutionService;
-    private final int spotsNum;
-    private final ModelConverter modelConverter;
+    private ManagedDateRepository managedDateRepository;
+    private ReactiveExecutionService reactiveExecutionService;
+    private ModelConverter modelConverter;
+
+    private int spotsNum;
 
     @Autowired
     public AvailableDatesVerifierServiceImpl(ManagedDateRepository managedDateRepository,

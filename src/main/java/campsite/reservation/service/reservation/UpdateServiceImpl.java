@@ -16,10 +16,10 @@ import java.util.Optional;
 @Service
 public class UpdateServiceImpl implements UpdateService {
 
-    private final ReactiveExecutionService reactiveExecutionService;
-    private final ModelConverter modelConverter;
-    private final CancellationService cancellationService;
-    private final ReservationService reservationService;
+    private ReactiveExecutionService reactiveExecutionService;
+    private ModelConverter modelConverter;
+    private CancellationService cancellationService;
+    private ReservationService reservationService;
 
     @Autowired
     public UpdateServiceImpl(ReactiveExecutionService reactiveExecutionService,

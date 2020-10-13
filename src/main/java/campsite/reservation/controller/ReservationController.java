@@ -17,8 +17,8 @@ import javax.validation.Valid;
 @Controller
 public class ReservationController {
 
-	private final ReservationFacade reservationFacade;
-	private final MethodParamValidator methodParamValidator;
+	private ReservationFacade reservationFacade;
+	private MethodParamValidator methodParamValidator;
 
 	@Autowired
 	public ReservationController(ReservationFacade reservationFacade,

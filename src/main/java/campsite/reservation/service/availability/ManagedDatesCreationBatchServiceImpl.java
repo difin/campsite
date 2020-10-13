@@ -15,7 +15,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Service
 public class ManagedDatesCreationBatchServiceImpl implements ManagedDatesCreationBatchService {
 
-    private final ManagedDateRepository managedDateRepository;
+    private ManagedDateRepository managedDateRepository;
 
     public ManagedDatesCreationBatchServiceImpl(ManagedDateRepository managedDateRepository) {
         this.managedDateRepository = managedDateRepository;
