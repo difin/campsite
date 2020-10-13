@@ -25,12 +25,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservedDateRepository reservedDateRepository;
-    private final ModelConverter modelConverter;
-    private final AvailabilityService availabilityService;
-    private final MethodParamValidator methodParamValidator;
-    private final ReactiveExecutionService reactiveExecutionService;
+    private ReservationRepository reservationRepository;
+    private ReservedDateRepository reservedDateRepository;
+    private AvailabilityService availabilityService;
+    private ReactiveExecutionService reactiveExecutionService;
+    private ModelConverter modelConverter;
+    private MethodParamValidator methodParamValidator;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
@@ -62,26 +62,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     public Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
         return reactiveExecutionService.execTransaction(() ->
-        {
-            CancellationStatus cancellationStatus = cancelInPresentTransaction(bookingReferencePayload);
-            UpdateStatus updateStatus = null;
-
-            switch (cancellationStatus) {
-                case NOT_FOUND:
-                    updateStatus =  UpdateStatus.NOT_FOUND;
-                    break;
-                case SUCCESS:
-                    reserveInPresentTransaction(payload, Optional.of(bookingReferencePayload.getBookingReference()));
-                    updateStatus = UpdateStatus.SUCCESS;
-                    break;
-            }
-
-            return updateStatus;
-        })
-        .map(modelConverter::updateStatusToDTO);
+                updateReservationInPresentTransaction(bookingReferencePayload, payload))
+                .map(modelConverter::updateStatusToDTO);
     }
 
-    private Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
+    protected Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
 
         List<ManagedDate> availableDates = availabilityService.getAvailableDatesEagerLocking(payload.getBookingDates());
 
@@ -112,7 +97,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    private CancellationStatus cancelInPresentTransaction(BookingReferencePayload bookingReferencePayload) {
+    protected CancellationStatus cancelInPresentTransaction(BookingReferencePayload bookingReferencePayload) {
 
         AtomicReference<CancellationStatus> cancellationStatus = new AtomicReference<>();
 
@@ -134,5 +119,24 @@ public class ReservationServiceImpl implements ReservationService {
             );
 
         return cancellationStatus.get();
+    }
+
+    protected UpdateStatus updateReservationInPresentTransaction(BookingReferencePayload bookingReferencePayload,
+                                                              ReservationPayload payload) {
+
+        CancellationStatus cancellationStatus = cancelInPresentTransaction(bookingReferencePayload);
+        UpdateStatus updateStatus = null;
+
+        switch (cancellationStatus) {
+            case NOT_FOUND:
+                updateStatus =  UpdateStatus.NOT_FOUND;
+                break;
+            case SUCCESS:
+                reserveInPresentTransaction(payload, Optional.of(bookingReferencePayload.getBookingReference()));
+                updateStatus = UpdateStatus.SUCCESS;
+                break;
+        }
+
+        return updateStatus;
     }
 }
