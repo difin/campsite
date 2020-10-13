@@ -21,7 +21,7 @@ public class ReactiveExecutionService {
         this.scheduler = scheduler;
     }
 
-    public Mono execTransaction(Executable executable){
+    public <T> Mono<T> execTransaction(Executable<T> executable){
 
         return Mono.defer(() -> transactionTemplate.execute(transactionStatus ->
                     Mono.fromFuture(
@@ -29,7 +29,7 @@ public class ReactiveExecutionService {
                 .subscribeOn(scheduler);
     }
 
-    public Mono execute(Executable executable){
+    public <T> Mono<T> execute(Executable<T> executable){
 
         return Mono.defer(() ->
                         Mono.fromFuture(

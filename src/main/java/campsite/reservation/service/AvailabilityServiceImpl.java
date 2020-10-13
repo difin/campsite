@@ -51,7 +51,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
         return reactiveExecutionService.execute(() -> getAvailableDatesBlocking(requestDates))
                 .flatMapIterable(t -> t)
-                .map(t -> modelConverter.managedDateEntityToDTO((ManagedDate)t));
+                .map(modelConverter::managedDateEntityToDTO);
     }
 
     public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {

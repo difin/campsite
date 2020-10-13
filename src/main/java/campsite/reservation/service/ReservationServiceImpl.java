@@ -72,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                 return reservation;
             })
-        .map(t -> modelConverter.reservationEntityToDTO((Reservation)t));
+        .map(modelConverter::reservationEntityToDTO);
     }
 
     public Mono<ActionResult> cancelReservation(String bookingReference) {
@@ -88,9 +88,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .ifPresentOrElse(
                     (r) -> {
                         r.getReservedDates()
-                            .forEach(t -> {
-                                reservedDateRepository.deleteById(t.getId());
-                            });
+                            .forEach(t -> reservedDateRepository.deleteById(t.getId()));
 
                         reservationRepository.deleteById(reservation.get().getId());
 
