@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Setter
 @Getter
-@BookingLengthLimit(message = "Illegal booking dates' range: campsite can be reserved for max 3 days")
+@BookingLengthLimit(message = "{campsite.validation.booking.length.too.long}")
 public class BookingDates extends RequestDates{
 
     public BookingDates(LocalDate arrival, LocalDate departure) {

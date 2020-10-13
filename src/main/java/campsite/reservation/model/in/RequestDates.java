@@ -19,7 +19,7 @@ import java.util.Locale;
 @NotNull
 @NoArgsConstructor
 @AllArgsConstructor
-@DepartureAfterArrivalValid(message = "Illegal booking dates' range: campsite can be reserved for max 3 days")
+@DepartureAfterArrivalValid(message = "{campsite.validation.departure.before.arrival}")
 public class RequestDates {
 
     public RequestDates(LocalDate arrival, LocalDate departure) {
@@ -27,13 +27,13 @@ public class RequestDates {
         this.departure = dateToString(departure);
     }
 
-    @DateFormatValid(message = "Arrival date format must be uuuu-MMM-dd")
-    @FutureReservationDate(message = "Arrival date must be no earlier then tomorrow")
+    @DateFormatValid(message = "{campsite.validation.illegal.arrival.date.format}")
+    @FutureReservationDate(message = "Arrival {campsite.validation.date.cannot.be.in.the.past}")
     private String arrival;
 
-    @DateFormatValid(message = "Departure date format must be uuuu-MMM-dd")
-    @FutureReservationDate(message = "Departure date cannot be in the past")
-    @DateWithinOneMonth(message = "End date must be within one month")
+    @DateFormatValid(message = "{campsite.validation.illegal.departure.date.format}")
+    @FutureReservationDate(message = "Departure {campsite.validation.date.cannot.be.in.the.past}")
+    @DateWithinOneMonth(message = "{campsite.validation.departure.date.too.far}")
     private String departure;
 
     public LocalDate getArrivalAsDate(){

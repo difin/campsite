@@ -21,6 +21,9 @@ public class RestErrorHandler {
         if (errorMessage.startsWith("[") && errorMessage.endsWith("]"))
             errorMessage = errorMessage.substring(1, errorMessage.length()-1);
 
+        if (errorMessage.endsWith("]") && !errorMessage.contains("["))
+            errorMessage = errorMessage.substring(0, errorMessage.length()-1);
+
         CampsiteErrorMessage campsiteErrorMessage = new CampsiteErrorMessage(errorMessage);
         return new ResponseEntity<>(campsiteErrorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
