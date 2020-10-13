@@ -5,6 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 public class DateWithinOneMonthValidator implements ConstraintValidator<DateWithinOneMonth, String> {
     public void initialize(DateWithinOneMonth constraint) {
@@ -21,7 +22,7 @@ public class DateWithinOneMonthValidator implements ConstraintValidator<DateWith
     }
 
     private LocalDate stringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
         return LocalDate.parse(date, formatter);
     }
 }

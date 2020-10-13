@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.TimeZone;
+
 @Component
 @Order(0)
 public class CampsiteApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
@@ -20,6 +22,9 @@ public class CampsiteApplicationListener implements ApplicationListener<Applicat
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+
         availabilityService.generateManagedDates();
+
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     }
 }

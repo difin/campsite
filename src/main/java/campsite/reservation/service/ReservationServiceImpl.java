@@ -6,6 +6,7 @@ import campsite.reservation.data.entity.ReservedDate;
 import campsite.reservation.data.repository.ReservationRepository;
 import campsite.reservation.data.repository.ReservedDateRepository;
 import campsite.reservation.model.in.ReservationPayload;
+import campsite.reservation.model.out.ActionResult;
 import campsite.reservation.model.out.BookingReference;
 import campsite.reservation.model.out.ModelConverter;
 import campsite.reservation.validation.BookingDatesValidator;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -53,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                 reservation.setName(payload.getName());
                 reservation.setEmail(payload.getEmail());
-                reservation.setBookingRef(UUID.randomUUID());
+                reservation.setBookingRef(UUID.randomUUID().toString());
 
                 reservationRepository.save(reservation);
 
@@ -70,5 +73,35 @@ public class ReservationServiceImpl implements ReservationService {
                 return reservation;
             })
         .map(t -> modelConverter.reservationEntityToDTO((Reservation)t));
+    }
+
+    public Mono<ActionResult> cancelReservation(String bookingReference) {
+        return reactiveExecutionService.execTransaction(() ->
+        {
+            AtomicReference<ActionResult> actionResult = new AtomicReference<>();
+
+            Optional<Reservation> reservation =
+                Optional.ofNullable(reservationRepository
+                    .findByBookingRef(bookingReference));
+
+            reservation
+                .ifPresentOrElse(
+                    (r) -> {
+                        r.getReservedDates()
+                            .forEach(t -> {
+                                reservedDateRepository.deleteById(t.getId());
+                            });
+
+                        reservationRepository.deleteById(reservation.get().getId());
+
+                        actionResult.set(new ActionResult("Reservation was deleted successfully"));
+                    },
+                    () -> {
+                        actionResult.set(new ActionResult("Reservation couldn't be deleted because it doesn't exist"));
+                    }
+                );
+
+            return actionResult.get();
+        });
     }
 }

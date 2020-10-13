@@ -12,6 +12,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Setter
 @Getter
@@ -26,11 +27,11 @@ public class RequestDates {
         this.departure = dateToString(departure);
     }
 
-    @DateFormatValid(message = "Arrival date format must be yyyy-MMM-dd")
+    @DateFormatValid(message = "Arrival date format must be uuuu-MMM-dd")
     @FutureReservationDate(message = "Arrival date must be no earlier then tomorrow")
     private String arrival;
 
-    @DateFormatValid(message = "Departure date format must be yyyy-MMM-dd")
+    @DateFormatValid(message = "Departure date format must be uuuu-MMM-dd")
     @FutureReservationDate(message = "Departure date cannot be in the past")
     @DateWithinOneMonth(message = "End date must be within one month")
     private String departure;
@@ -44,12 +45,12 @@ public class RequestDates {
     }
 
     private LocalDate stringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
         return LocalDate.parse(date, formatter);
     }
 
     private String dateToString(LocalDate date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
         return date.format(formatter);
     }
 }

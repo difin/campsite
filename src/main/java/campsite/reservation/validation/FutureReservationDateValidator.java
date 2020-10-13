@@ -5,6 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 public class FutureReservationDateValidator implements ConstraintValidator<FutureReservationDate, String> {
     public void initialize(FutureReservationDate constraint) {
@@ -21,7 +22,7 @@ public class FutureReservationDateValidator implements ConstraintValidator<Futur
     }
 
     private LocalDate stringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
         return LocalDate.parse(date, formatter);
     }
 }

@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "RESERVATION")
@@ -32,9 +31,9 @@ public class Reservation {
 	@Column(name = "BOOKING_REF", updatable = false, nullable = false)
 	@Getter
 	@Setter
-	private UUID bookingRef;
+	private String bookingRef;
 
 	@Getter
 	@OneToMany(mappedBy = "reservationId", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-	List<ReservedDate> reservedDates;
+	private List<ReservedDate> reservedDates;
 }
