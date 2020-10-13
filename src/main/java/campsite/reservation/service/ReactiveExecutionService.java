@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 @Service
 public class ReactiveExecutionService {
@@ -21,19 +22,19 @@ public class ReactiveExecutionService {
         this.scheduler = scheduler;
     }
 
-    public <T> Mono<T> execTransaction(Executable<T> executable){
+    public <T> Mono<T> execTransaction(Supplier<T> executable){
 
         return Mono.defer(() -> transactionTemplate.execute(transactionStatus ->
                     Mono.fromFuture(
-                            CompletableFuture.supplyAsync(executable::execute))))
+                            CompletableFuture.supplyAsync(executable))))
                 .subscribeOn(scheduler);
     }
 
-    public <T> Mono<T> execute(Executable<T> executable){
+    public <T> Mono<T> execute(Supplier<T> executable){
 
         return Mono.defer(() ->
                         Mono.fromFuture(
-                                CompletableFuture.supplyAsync(executable::execute)))
+                                CompletableFuture.supplyAsync(executable)))
                 .subscribeOn(scheduler);
     }
 }
