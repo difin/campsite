@@ -44,17 +44,17 @@ class ReservationServiceImplTest {
     private ManagedDatesFacade managedDatesFacade;
 
     @InjectMocks
-    ReservationServiceImpl reservationService;
+    private ReservationServiceImpl reservationService;
 
-    String arrival = "2020-Nov-01";
-    String departure = "2020-Nov-04";
-    String name = "some name";
-    String email = "some email";
-    String bookingRef = "some booking reference";
+    private String arrival = "2020-Nov-01";
+    private String departure = "2020-Nov-04";
+    private String name = "some name";
+    private String email = "some email";
+    private String bookingRef = "some booking reference";
 
-    ManagedDate nov01 = ManagedDate.builder().id(1).date( LocalDate.of(2020, 11, 1)).reservedDates(Lists.emptyList()).build();
-    ManagedDate nov02 = ManagedDate.builder().id(2).date( LocalDate.of(2020, 11, 2)).reservedDates(Lists.emptyList()).build();
-    ManagedDate nov03 = ManagedDate.builder().id(3).date( LocalDate.of(2020, 11, 3)).reservedDates(Lists.emptyList()).build();
+    private ManagedDate nov01 = ManagedDate.builder().id(1).date( LocalDate.of(2020, 11, 1)).reservedDates(Lists.emptyList()).build();
+    private ManagedDate nov02 = ManagedDate.builder().id(2).date( LocalDate.of(2020, 11, 2)).reservedDates(Lists.emptyList()).build();
+    private ManagedDate nov03 = ManagedDate.builder().id(3).date( LocalDate.of(2020, 11, 3)).reservedDates(Lists.emptyList()).build();
 
     List<ManagedDate> availableDates = new ArrayList<>();
 

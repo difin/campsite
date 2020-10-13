@@ -25,12 +25,12 @@ class CancellationServiceImplTest {
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    CancellationServiceImpl cancellationService;
+    private CancellationServiceImpl cancellationService;
 
-    int id = 1;
-    String name = "some name";
-    String email = "some email";
-    String bookingRef = "some booking reference";
+    private int id = 1;
+    private String name = "some name";
+    private String email = "some email";
+    private String bookingRef = "some booking reference";
 
     @DisplayName("When cancelling existing reservation then it gets cancelled successfully")
     @Test
