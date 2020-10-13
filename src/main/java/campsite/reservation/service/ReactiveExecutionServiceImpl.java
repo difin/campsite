@@ -6,7 +6,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -24,17 +23,13 @@ public class ReactiveExecutionServiceImpl implements ReactiveExecutionService {
 
     public <T> Mono<T> execTransaction(Supplier<T> executable){
 
-        return Mono.defer(() -> transactionTemplate.execute(transactionStatus ->
-                    Mono.fromFuture(
-                            CompletableFuture.supplyAsync(executable))))
-                .subscribeOn(scheduler);
+         return Mono.defer(() -> transactionTemplate.execute(transactionStatus -> Mono.just(executable.get())))
+                 .subscribeOn(scheduler);
     }
 
     public <T> Mono<T> exec(Supplier<T> executable){
 
-        return Mono.defer(() ->
-                        Mono.fromFuture(
-                                CompletableFuture.supplyAsync(executable)))
+        return Mono.defer(() -> Mono.just(executable.get()))
                 .subscribeOn(scheduler);
     }
 }
