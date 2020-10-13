@@ -46,7 +46,7 @@ public class UpdateServiceImpl implements UpdateService {
 
         switch (cancellationStatus) {
             case NOT_FOUND:
-                updateStatus =  UpdateStatus.NOT_FOUND;
+                updateStatus = UpdateStatus.NOT_FOUND;
                 break;
             case SUCCESS:
                 reservationService.reserveInPresentTransaction(payload, Optional.of(bookingReferencePayload.getBookingReference()));

@@ -50,7 +50,7 @@ class CancellationServiceImplTest {
 
     @DisplayName("When attempting to cancel a reservation that doesn't exist and error status is returned")
     @Test
-    void cancellingAbsentReservation(){
+    void attemptingToCancelNotExistentReservation(){
 
         BookingReferencePayload payload = new BookingReferencePayload(bookingRef);
 
