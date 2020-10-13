@@ -25,6 +25,6 @@ public class RestErrorHandler {
             errorMessage = errorMessage.substring(0, errorMessage.length()-1);
 
         CampsiteErrorMessage campsiteErrorMessage = new CampsiteErrorMessage(errorMessage);
-        return new ResponseEntity<>(campsiteErrorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(campsiteErrorMessage, HttpStatus.OK);
     }
 }

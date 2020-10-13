@@ -14,13 +14,13 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class ReservationPayload {
 
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "{campsite.validation.null.name}")
+    @NotEmpty(message = "{campsite.validation.empty.name}")
     private String name;
 
-    @NotNull
-    @NotEmpty
-    @Email
+    @NotNull(message = "{campsite.validation.null.email}")
+    @NotEmpty(message = "{campsite.validation.empty.email}")
+    @Email(message = "{campsite.validation.client.email.format}")
     private String email;
 
     @Valid

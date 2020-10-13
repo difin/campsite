@@ -5,11 +5,14 @@ import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.data.entity.ReservedDate;
 import campsite.reservation.data.repository.ReservationRepository;
 import campsite.reservation.data.repository.ReservedDateRepository;
+import campsite.reservation.model.in.BookingReferencePayload;
 import campsite.reservation.model.in.ReservationPayload;
+import campsite.reservation.model.internal.CancellationStatus;
+import campsite.reservation.model.internal.UpdateStatus;
 import campsite.reservation.model.out.ActionResult;
 import campsite.reservation.model.out.BookingReference;
-import campsite.reservation.model.out.ModelConverter;
-import campsite.reservation.validation.BookingDatesValidator;
+import campsite.reservation.model.ModelConverter;
+import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -26,7 +29,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservedDateRepository reservedDateRepository;
     private final ModelConverter modelConverter;
     private final AvailabilityService availabilityService;
-    private final BookingDatesValidator bookingDatesValidator;
+    private final MethodParamValidator methodParamValidator;
     private final ReactiveExecutionService reactiveExecutionService;
 
     @Autowired
@@ -35,71 +38,101 @@ public class ReservationServiceImpl implements ReservationService {
                                   AvailabilityService availabilityService,
                                   ReactiveExecutionService reactiveExecutionService,
                                   ModelConverter modelConverter,
-                                  BookingDatesValidator bookingDatesValidator){
+                                  MethodParamValidator methodParamValidator){
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
         this.availabilityService = availabilityService;
         this.reservedDateRepository = reservedDateRepository;
-        this.bookingDatesValidator = bookingDatesValidator;
+        this.methodParamValidator = methodParamValidator;
         this.reactiveExecutionService = reactiveExecutionService;
     }
 
     public Mono<BookingReference> reserve(ReservationPayload payload) {
 
         return reactiveExecutionService.execTransaction(() ->
-            {
-                List<ManagedDate> availableDates = availabilityService.getAvailableDatesEagerLocking(payload.getBookingDates());
+                reserveInPresentTransaction(payload, Optional.empty()))
+                .map(modelConverter::reservationEntityToDTO);
+    }
 
-                bookingDatesValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
+    public Mono<ActionResult> cancelReservation(BookingReferencePayload bookingReferencePayload) {
+        return reactiveExecutionService.execTransaction(() ->
+                cancelInPresentTransaction(bookingReferencePayload))
+                .map(modelConverter::cancellationStatusToDTO);
+    }
 
-                Reservation reservation = new Reservation();
+    public Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
+        return reactiveExecutionService.execTransaction(() ->
+        {
+            CancellationStatus cancellationStatus = cancelInPresentTransaction(bookingReferencePayload);
+            UpdateStatus updateStatus = null;
 
-                reservation.setName(payload.getName());
-                reservation.setEmail(payload.getEmail());
-                reservation.setBookingRef(UUID.randomUUID().toString());
+            switch (cancellationStatus) {
+                case NOT_FOUND:
+                    updateStatus =  UpdateStatus.NOT_FOUND;
+                    break;
+                case SUCCESS:
+                    reserveInPresentTransaction(payload, Optional.of(bookingReferencePayload.getBookingReference()));
+                    updateStatus = UpdateStatus.SUCCESS;
+                    break;
+            }
 
-                reservationRepository.save(reservation);
+            return updateStatus;
+        })
+        .map(modelConverter::updateStatusToDTO);
+    }
 
-                availableDates
-                    .forEach(managedDate -> {
+    private Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
+
+        List<ManagedDate> availableDates = availabilityService.getAvailableDatesEagerLocking(payload.getBookingDates());
+
+        methodParamValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
+
+        Reservation reservation = new Reservation();
+
+        reservation.setName(payload.getName());
+        reservation.setEmail(payload.getEmail());
+
+        bookingRef.ifPresentOrElse(
+                reservation::setBookingRef,
+                () -> reservation.setBookingRef(UUID.randomUUID().toString())
+        );
+
+        reservationRepository.save(reservation);
+
+        availableDates
+                .forEach(managedDate -> {
                             ReservedDate reservedDate = new ReservedDate();
                             reservedDate.setManagedDate(managedDate);
                             reservedDate.setReservationId(reservation);
 
                             reservedDateRepository.save(reservedDate);
                         }
-                    );
-
-                return reservation;
-            })
-        .map(modelConverter::reservationEntityToDTO);
-    }
-
-    public Mono<ActionResult> cancelReservation(String bookingReference) {
-        return reactiveExecutionService.execTransaction(() ->
-        {
-            AtomicReference<ActionResult> actionResult = new AtomicReference<>();
-
-            Optional<Reservation> reservation =
-                Optional.ofNullable(reservationRepository
-                    .findByBookingRef(bookingReference));
-
-            reservation
-                .ifPresentOrElse(
-                    (r) -> {
-                        r.getReservedDates()
-                            .forEach(t -> reservedDateRepository.deleteById(t.getId()));
-
-                        reservationRepository.deleteById(reservation.get().getId());
-
-                        actionResult.set(new ActionResult("Reservation was deleted successfully"));
-                    },
-                    () -> {
-                        actionResult.set(new ActionResult("Reservation couldn't be deleted because it doesn't exist"));
-                    }
                 );
 
-            return actionResult.get();
-        });
+        return reservation;
+    }
+
+    private CancellationStatus cancelInPresentTransaction(BookingReferencePayload bookingReferencePayload) {
+
+        AtomicReference<CancellationStatus> cancellationStatus = new AtomicReference<>();
+
+        Optional<Reservation> reservation =
+                Optional.ofNullable(reservationRepository
+                        .findByBookingRef(bookingReferencePayload.getBookingReference()));
+
+        reservation
+            .ifPresentOrElse(
+                (r) -> {
+                    r.getReservedDates()
+                        .forEach(t -> reservedDateRepository.deleteById(t.getId()));
+
+                    reservationRepository.deleteById(r.getId());
+
+                    cancellationStatus.set(CancellationStatus.SUCCESS);
+                },
+                () -> cancellationStatus.set(CancellationStatus.NOT_FOUND)
+            );
+
+        return cancellationStatus.get();
     }
 }

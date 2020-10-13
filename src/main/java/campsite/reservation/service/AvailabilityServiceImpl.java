@@ -3,7 +3,7 @@ package campsite.reservation.service;
 import campsite.reservation.data.entity.ManagedDate;
 import campsite.reservation.data.repository.ManagedDateRepository;
 import campsite.reservation.model.out.AvailableDateModel;
-import campsite.reservation.model.out.ModelConverter;
+import campsite.reservation.model.ModelConverter;
 import campsite.reservation.model.in.RequestDates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
