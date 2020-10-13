@@ -1,6 +1,7 @@
 package campsite.reservation.model.in;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class ReservationPayload {

@@ -1,14 +1,12 @@
 package campsite.reservation.model.in;
 
 import campsite.reservation.validation.BookingLengthLimit;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @NoArgsConstructor
+@Builder
 @Setter
 @Getter
 @BookingLengthLimit(message = "{campsite.validation.booking.length.too.long}")

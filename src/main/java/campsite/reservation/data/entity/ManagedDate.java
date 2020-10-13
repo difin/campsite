@@ -7,6 +7,9 @@ import java.util.List;
 import lombok.*;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "MANAGED_DATE")
 public class ManagedDate {
 
