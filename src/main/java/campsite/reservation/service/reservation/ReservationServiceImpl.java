@@ -5,12 +5,13 @@ import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.data.entity.ReservedDate;
 import campsite.reservation.data.repository.ReservationRepository;
 import campsite.reservation.data.repository.ReservedDateRepository;
+import campsite.reservation.exception.CampsiteException;
 import campsite.reservation.model.ModelConverter;
+import campsite.reservation.model.in.RequestDates;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.out.BookingReference;
 import campsite.reservation.service.ManagedDatesFacade;
 import campsite.reservation.service.common.ReactiveExecutionService;
-import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,8 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -27,20 +30,17 @@ public class ReservationServiceImpl implements ReservationService {
     private ManagedDatesFacade managedDatesFacade;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
-    private MethodParamValidator methodParamValidator;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
                                   ManagedDatesFacade managedDatesFacade,
                                   ReactiveExecutionService reactiveExecutionService,
-                                  ModelConverter modelConverter,
-                                  MethodParamValidator methodParamValidator){
+                                  ModelConverter modelConverter){
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
         this.managedDatesFacade = managedDatesFacade;
         this.reservedDateRepository = reservedDateRepository;
-        this.methodParamValidator = methodParamValidator;
         this.reactiveExecutionService = reactiveExecutionService;
     }
 
@@ -55,7 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesEagerLocking(payload.getBookingDates());
 
-        methodParamValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
+        validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
 
         Reservation reservation = new Reservation();
 
@@ -80,5 +80,13 @@ public class ReservationServiceImpl implements ReservationService {
                 );
 
         return reservation;
+    }
+
+    private void validateCampsiteAvailability(RequestDates requestDates, int availableDaysCount){
+
+        if (DAYS.between(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate()) > availableDaysCount){
+            throw new CampsiteException("Reservation couldn't proceed because campsite is at full capacity at one or more days, " +
+                    "please choose other dates");
+        }
     }
 }

@@ -5,11 +5,12 @@ import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.data.entity.ReservedDate;
 import campsite.reservation.data.repository.ReservationRepository;
 import campsite.reservation.data.repository.ReservedDateRepository;
+import campsite.reservation.exception.CampsiteException;
 import campsite.reservation.model.in.BookingDates;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.service.reservation.ReservationServiceImpl;
-import campsite.reservation.validation.MethodParamValidator;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,9 +43,6 @@ class ReservationServiceImplTest {
     @Mock
     private ManagedDatesFacade managedDatesFacade;
 
-    @Mock
-    private MethodParamValidator methodParamValidator;
-
     @InjectMocks
     ReservationServiceImpl reservationService;
 
@@ -63,7 +61,7 @@ class ReservationServiceImplTest {
     @DisplayName("When making a reservation and requested dates are available then these dates are " +
             "stored in reserved_dates table and booking reference number is returned")
     @Test
-    void reservingAvailableDates(){
+    void allRequestedDatesAvailable(){
 
         availableDates.add(nov01);
         availableDates.add(nov02);
@@ -80,12 +78,41 @@ class ReservationServiceImplTest {
         verify(reservedDateRepository, times(3)).save(argumentCaptor.capture());
 
         List<ManagedDate> reservedDates = argumentCaptor.getAllValues()
-                .stream().map(t -> t.getManagedDate()).collect(Collectors.toList());
+                .stream().map(ReservedDate::getManagedDate).collect(Collectors.toList());
 
         assertTrue(reservedDates.containsAll(availableDates));
 
         assertEquals(bookingRef, actual.getBookingRef());
         assertEquals(name, actual.getName());
         assertEquals(email, actual.getEmail());
+    }
+
+    @DisplayName("When making a reservation and all requested dates are not available then CampsiteException is thrown")
+    @Test
+    void allRequestedDatesAreNotAvailable(){
+
+        BookingDates bookingDates = new BookingDates(arrival, departure);
+        ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
+
+        when(managedDatesFacade.getAvailableDatesEagerLocking(bookingDates)).thenReturn(availableDates);
+
+        Assertions.assertThrows(CampsiteException.class, () ->
+                reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
+    }
+
+    @DisplayName("When making a reservation and only 2 out of 3 requested dates are available then CampsiteException is thrown")
+    @Test
+    void someRequestedDatesAreNotAvailable(){
+
+        availableDates.add(nov01);
+        availableDates.add(nov02);
+
+        BookingDates bookingDates = new BookingDates(arrival, departure);
+        ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
+
+        when(managedDatesFacade.getAvailableDatesEagerLocking(bookingDates)).thenReturn(availableDates);
+
+        Assertions.assertThrows(CampsiteException.class, () ->
+                reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
     }
 }
