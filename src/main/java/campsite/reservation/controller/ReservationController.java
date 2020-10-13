@@ -4,7 +4,7 @@ import campsite.reservation.model.in.BookingReferencePayload;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.out.ActionResult;
 import campsite.reservation.model.out.BookingReference;
-import campsite.reservation.service.ReservationService;
+import campsite.reservation.service.ReservationFacade;
 import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,13 +17,13 @@ import javax.validation.Valid;
 @Controller
 public class ReservationController {
 
-	private final ReservationService reservationService;
+	private final ReservationFacade reservationFacade;
 	private final MethodParamValidator methodParamValidator;
 
 	@Autowired
-	public ReservationController(ReservationService reservationService,
-								 MethodParamValidator methodParamValidator) {
-		this.reservationService = reservationService;
+	public ReservationController(ReservationFacade reservationFacade,
+                                 MethodParamValidator methodParamValidator) {
+		this.reservationFacade = reservationFacade;
 		this.methodParamValidator = methodParamValidator;
 	}
 
@@ -34,7 +34,7 @@ public class ReservationController {
 	)
 	public @ResponseBody Mono<BookingReference> reserve(@Valid @RequestBody ReservationPayload payload) {
 
-		return reservationService.reserve(payload);
+		return reservationFacade.reserve(payload);
 	}
 
 	@DeleteMapping(
@@ -44,7 +44,7 @@ public class ReservationController {
 	)
 	public @ResponseBody Mono<ActionResult> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
 
-		return reservationService.cancelReservation(
+		return reservationFacade.cancelReservation(
 				methodParamValidator.validateBookingReference(bookingReference));
 	}
 
@@ -56,7 +56,7 @@ public class ReservationController {
 	public @ResponseBody Mono<ActionResult> updateReservation(@PathVariable BookingReferencePayload bookingReference,
 															  @Valid @RequestBody ReservationPayload payload) {
 
-		return reservationService.updateReservation(
+		return reservationFacade.updateReservation(
 				methodParamValidator.validateBookingReference(bookingReference), payload);
 	}
 }

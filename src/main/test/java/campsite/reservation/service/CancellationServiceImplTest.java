@@ -2,11 +2,9 @@ package campsite.reservation.service;
 
 import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.data.repository.ReservationRepository;
-import campsite.reservation.data.repository.ReservedDateRepository;
-import campsite.reservation.model.ModelConverter;
 import campsite.reservation.model.in.BookingReferencePayload;
 import campsite.reservation.model.internal.CancellationStatus;
-import campsite.reservation.validation.MethodParamValidator;
+import campsite.reservation.service.reservation.CancellationServiceImpl;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,28 +19,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-class ReservationServiceImplTest {
+class CancellationServiceImplTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
-    @Mock
-    private ReservedDateRepository reservedDateRepository;
-
-    @Mock
-    private AvailabilityService availabilityService;
-
-    @Mock
-    private ReactiveExecutionService reactiveExecutionService;
-
-    @Mock
-    private ModelConverter modelConverter;
-
-    @Mock
-    private MethodParamValidator methodParamValidator;
-
     @InjectMocks
-    ReservationServiceImpl reservationServiceImpl;
+    CancellationServiceImpl cancellationService;
 
     @DisplayName("When cancelling existing reservation then it gets cancelled successfully")
     @Test
@@ -60,7 +43,7 @@ class ReservationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(reservation);
 
-        CancellationStatus actual = reservationServiceImpl.cancelInPresentTransaction(payload);
+        CancellationStatus actual = cancellationService.cancelInPresentTransaction(payload);
 
         assertEquals(CancellationStatus.SUCCESS, actual);
     }
@@ -74,7 +57,7 @@ class ReservationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(null);
 
-        CancellationStatus actual = reservationServiceImpl.cancelInPresentTransaction(payload);
+        CancellationStatus actual = cancellationService.cancelInPresentTransaction(payload);
 
         assertEquals(CancellationStatus.NOT_FOUND, actual);
     }

@@ -6,7 +6,7 @@ import campsite.reservation.model.out.ActionResult;
 import campsite.reservation.model.out.BookingReference;
 import reactor.core.publisher.Mono;
 
-public interface ReservationService {
+public interface ReservationFacade {
 
    Mono<BookingReference> reserve(ReservationPayload payload);
    Mono<ActionResult> cancelReservation(BookingReferencePayload bookingReferencePayload);
