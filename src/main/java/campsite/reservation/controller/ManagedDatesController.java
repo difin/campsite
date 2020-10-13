@@ -2,7 +2,7 @@ package campsite.reservation.controller;
 
 import campsite.reservation.model.out.AvailableDateModel;
 import campsite.reservation.model.in.RequestDates;
-import campsite.reservation.service.AvailabilityFacade;
+import campsite.reservation.service.ManagedDatesFacade;
 import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @Controller
-public class AvailabilityController {
+public class ManagedDatesController {
 
-	private AvailabilityFacade availabilityFacade;
+	private ManagedDatesFacade managedDatesFacade;
 	private MethodParamValidator methodParamValidator;
 
 	@Autowired
-	public AvailabilityController(AvailabilityFacade availabilityFacade,
-                                  MethodParamValidator methodParamValidator) {
-		this.availabilityFacade = availabilityFacade;
+	public ManagedDatesController(ManagedDatesFacade managedDatesFacade,
+								  MethodParamValidator methodParamValidator) {
+		this.managedDatesFacade = managedDatesFacade;
 		this.methodParamValidator = methodParamValidator;
 	}
 
@@ -32,7 +32,7 @@ public class AvailabilityController {
 			@RequestParam(name="arrival") String arrival,
 			@RequestParam(name="departure") String departure) {
 
-		return availabilityFacade
+		return managedDatesFacade
 			.getAvailableDates(methodParamValidator
 				.validateRequestDates(new RequestDates(arrival, departure)));
 	}
@@ -43,6 +43,6 @@ public class AvailabilityController {
 	)
 	public Flux<AvailableDateModel> getAvailableDatesDefaultRange() {
 
-		return availabilityFacade.getAvailableDates();
+		return managedDatesFacade.getAvailableDates();
 	}
 }

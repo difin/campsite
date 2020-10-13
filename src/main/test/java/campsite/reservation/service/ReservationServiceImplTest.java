@@ -40,7 +40,7 @@ class ReservationServiceImplTest {
     private ReservedDateRepository reservedDateRepository;
 
     @Mock
-    private AvailabilityFacade availabilityFacade;
+    private ManagedDatesFacade managedDatesFacade;
 
     @Mock
     private MethodParamValidator methodParamValidator;
@@ -72,7 +72,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(availabilityFacade.getAvailableDatesEagerLocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesEagerLocking(bookingDates)).thenReturn(availableDates);
 
         Reservation actual = reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef));
 

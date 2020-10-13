@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface AvailabilityFacade {
+public interface ManagedDatesFacade {
 
    Flux<AvailableDateModel> getAvailableDates();
    Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates);

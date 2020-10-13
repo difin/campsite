@@ -12,13 +12,13 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 @Service
-public class AvailabilityFacadeImpl implements AvailabilityFacade {
+public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
 
     private AvailableDatesVerifierService availableDatesVerifierService;
     private ManagedDatesCreationBatchService managedDatesCreationBatchService;
 
     @Autowired
-    public AvailabilityFacadeImpl(AvailableDatesVerifierService availableDatesVerifierService,
+    public ManagedDatesFacadeImpl(AvailableDatesVerifierService availableDatesVerifierService,
                                   ManagedDatesCreationBatchService managedDatesCreationBatchService) {
 
         this.availableDatesVerifierService = availableDatesVerifierService;

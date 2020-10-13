@@ -1,6 +1,6 @@
 package campsite.reservation;
 
-import campsite.reservation.service.AvailabilityFacade;
+import campsite.reservation.service.ManagedDatesFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -13,17 +13,17 @@ import java.util.TimeZone;
 @Order(0)
 public class CampsiteApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
 
-    final AvailabilityFacade availabilityFacade;
+    final ManagedDatesFacade managedDatesFacade;
 
     @Autowired
-    public CampsiteApplicationListener(AvailabilityFacade availabilityFacade) {
-        this.availabilityFacade = availabilityFacade;
+    public CampsiteApplicationListener(ManagedDatesFacade managedDatesFacade) {
+        this.managedDatesFacade = managedDatesFacade;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        availabilityFacade.generateManagedDates();
+        managedDatesFacade.generateManagedDates();
 
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     }
