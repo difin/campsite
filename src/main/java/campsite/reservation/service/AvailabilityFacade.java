@@ -7,11 +7,11 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface AvailabilityService {
+public interface AvailabilityFacade {
 
    Flux<AvailableDateModel> getAvailableDates();
    Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates);
-   void generateManagedDates();
    List<ManagedDate> getAvailableDatesEagerLocking(RequestDates requestDates);
    List<ManagedDate> getAvailableDatesEagerNotLocking(RequestDates requestDates);
+   void generateManagedDates();
 }

@@ -8,7 +8,7 @@ import campsite.reservation.data.repository.ReservedDateRepository;
 import campsite.reservation.model.ModelConverter;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.out.BookingReference;
-import campsite.reservation.service.AvailabilityService;
+import campsite.reservation.service.AvailabilityFacade;
 import campsite.reservation.service.common.ReactiveExecutionService;
 import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservedDateRepository reservedDateRepository;
-    private final AvailabilityService availabilityService;
+    private final AvailabilityFacade availabilityFacade;
     private final ReactiveExecutionService reactiveExecutionService;
     private final ModelConverter modelConverter;
     private final MethodParamValidator methodParamValidator;
@@ -32,13 +32,13 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
-                                  AvailabilityService availabilityService,
+                                  AvailabilityFacade availabilityFacade,
                                   ReactiveExecutionService reactiveExecutionService,
                                   ModelConverter modelConverter,
                                   MethodParamValidator methodParamValidator){
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
-        this.availabilityService = availabilityService;
+        this.availabilityFacade = availabilityFacade;
         this.reservedDateRepository = reservedDateRepository;
         this.methodParamValidator = methodParamValidator;
         this.reactiveExecutionService = reactiveExecutionService;
@@ -53,7 +53,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     public Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
 
-        List<ManagedDate> availableDates = availabilityService.getAvailableDatesEagerLocking(payload.getBookingDates());
+        List<ManagedDate> availableDates = availabilityFacade.getAvailableDatesEagerLocking(payload.getBookingDates());
 
         methodParamValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
 
