@@ -49,16 +49,23 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     public Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates) {
 
-        return reactiveExecutionService.execute(() -> getAvailableDatesBlocking(requestDates))
+        return reactiveExecutionService.exec(() -> getAvailableDatesEagerNotLocking(requestDates))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
+    public List<ManagedDate> getAvailableDatesEagerLocking(RequestDates requestDates) {
 
-        return managedDateRepository.getAvailableDates(spotsNum,
+        return managedDateRepository.getAvailableDatesLocking(spotsNum,
                                         requestDates.getArrivalAsDate(),
                                         requestDates.getDepartureAsDate().minusDays(1));
+    }
+
+    public List<ManagedDate> getAvailableDatesEagerNotLocking(RequestDates requestDates) {
+
+        return managedDateRepository.getAvailableDatesNotLocking(spotsNum,
+                requestDates.getArrivalAsDate(),
+                requestDates.getDepartureAsDate().minusDays(1));
     }
 
     @Scheduled(cron = "0 0 0 * * *")

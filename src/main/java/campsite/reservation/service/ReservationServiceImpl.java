@@ -48,7 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         return reactiveExecutionService.execTransaction(() ->
             {
-                List<ManagedDate> availableDates = availabilityService.getAvailableDatesBlocking(payload.getBookingDates());
+                List<ManagedDate> availableDates = availabilityService.getAvailableDatesEagerLocking(payload.getBookingDates());
 
                 bookingDatesValidator.validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
 
