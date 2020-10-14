@@ -1,2 +1,2 @@
 # campsite
-Campsite reservation system backend
+Volcanic Getaways
