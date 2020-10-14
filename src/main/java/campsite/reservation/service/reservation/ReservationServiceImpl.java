@@ -85,7 +85,7 @@ public class ReservationServiceImpl implements ReservationService {
     private void validateCampsiteAvailability(RequestDates requestDates, int availableDaysCount){
 
         if (DAYS.between(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate()) > availableDaysCount){
-            throw new CampsiteException("Reservation couldn't proceed because campsite is at full capacity at one or more days, " +
+            throw new CampsiteException("Reservation couldn't proceed because campsite is at full capacity on one or more days, " +
                     "please choose other dates");
         }
     }

@@ -9,4 +9,7 @@ public interface CancellationService {
 
     Mono<ActionResult> cancelReservation(BookingReferencePayload bookingReferencePayload);
     CancellationStatus cancelInPresentTransaction(BookingReferencePayload bookingReferencePayload);
+
+    // Service for internal use only, not in facade
+    void cancelAllReservations();
 }

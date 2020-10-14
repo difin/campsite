@@ -65,7 +65,7 @@ class UpdateServiceImplTest {
 
     @DisplayName("When updating existing reservation then it gets updated successfully")
     @Test
-    void updatingExistingReservation(){
+    void updatingExistingReservationTest(){
 
         availableDates.add(nov01);
         availableDates.add(nov02);
@@ -86,7 +86,7 @@ class UpdateServiceImplTest {
 
     @DisplayName("When trying to update existing reservation, but it is not found then getting status not found")
     @Test
-    void attemptingToUpdateNotExistentReservation(){
+    void attemptingToUpdateNotExistentReservationTest(){
 
         availableDates.add(nov01);
         availableDates.add(nov02);

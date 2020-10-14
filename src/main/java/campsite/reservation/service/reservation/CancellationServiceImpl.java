@@ -3,6 +3,7 @@ package campsite.reservation.service.reservation;
 import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.data.repository.ReservationRepository;
 import campsite.reservation.data.repository.ReservedDateRepository;
+import campsite.reservation.exception.CampsiteException;
 import campsite.reservation.model.ModelConverter;
 import campsite.reservation.model.in.BookingReferencePayload;
 import campsite.reservation.model.internal.CancellationStatus;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,6 +65,20 @@ public class CancellationServiceImpl implements CancellationService {
                 );
 
         return cancellationStatus.get();
+    }
+
+    @Transactional
+    public void cancelAllReservations() {
+
+        List<Reservation> reservations = reservationRepository.findAll();
+        reservations.forEach(t -> {
+            CancellationStatus cancellationStatus =
+                    cancelInPresentTransaction(new BookingReferencePayload(t.getBookingRef()));
+
+            if (cancellationStatus != CancellationStatus.SUCCESS){
+                throw new CampsiteException("Failed cancelling all reservations");
+            }
+        });
     }
 
 }

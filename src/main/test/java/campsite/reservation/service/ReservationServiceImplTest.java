@@ -61,7 +61,7 @@ class ReservationServiceImplTest {
     @DisplayName("When making a reservation and requested dates are available then these dates are " +
             "stored in reserved_dates table and booking reference number is returned")
     @Test
-    void allRequestedDatesAvailable(){
+    void allRequestedDatesAvailableTest(){
 
         availableDates.add(nov01);
         availableDates.add(nov02);
@@ -89,7 +89,7 @@ class ReservationServiceImplTest {
 
     @DisplayName("When making a reservation and all requested dates are not available then CampsiteException is thrown")
     @Test
-    void allRequestedDatesAreNotAvailable(){
+    void allRequestedDatesAreNotAvailableTest(){
 
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
@@ -102,7 +102,7 @@ class ReservationServiceImplTest {
 
     @DisplayName("When making a reservation and only 2 out of 3 requested dates are available then CampsiteException is thrown")
     @Test
-    void someRequestedDatesAreNotAvailable(){
+    void someRequestedDatesAreNotAvailableTest(){
 
         availableDates.add(nov01);
         availableDates.add(nov02);

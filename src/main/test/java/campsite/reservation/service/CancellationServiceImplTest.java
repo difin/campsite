@@ -34,7 +34,7 @@ class CancellationServiceImplTest {
 
     @DisplayName("When cancelling existing reservation then it gets cancelled successfully")
     @Test
-    void cancellingExistingReservation(){
+    void cancellingExistingReservationTest(){
 
         BookingReferencePayload payload = new BookingReferencePayload(bookingRef);
 
@@ -50,7 +50,7 @@ class CancellationServiceImplTest {
 
     @DisplayName("When attempting to cancel a reservation that doesn't exist and error status is returned")
     @Test
-    void attemptingToCancelNotExistentReservation(){
+    void attemptingToCancelNotExistentReservationTest(){
 
         BookingReferencePayload payload = new BookingReferencePayload(bookingRef);
 
