@@ -1,2 +1,1 @@
-# campsite
-Volcanic Getaways
+# Volcanic Getaways
