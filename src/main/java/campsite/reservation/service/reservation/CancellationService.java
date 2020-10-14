@@ -11,5 +11,5 @@ public interface CancellationService {
     CancellationStatus cancelInPresentTransaction(BookingReferencePayload bookingReferencePayload);
 
     // Service for internal use only, not in facade
-    void cancelAllReservations();
+    void deleteAllReservations();
 }

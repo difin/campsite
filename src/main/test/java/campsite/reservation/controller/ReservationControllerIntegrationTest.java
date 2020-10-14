@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -18,7 +19,12 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@TestPropertySource(
+        properties = {
+                "spring.datasource.url=jdbc:h2:file:~/h2/campsite_test"
+        }
+)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class ReservationControllerIntegrationTest {
 
@@ -36,7 +42,7 @@ class ReservationControllerIntegrationTest {
 
     @BeforeEach
     public void beforeEach() {
-        cancellationService.cancelAllReservations();
+        cancellationService.deleteAllReservations();
     }
 
     private final String arrival = "2020-Nov-01";

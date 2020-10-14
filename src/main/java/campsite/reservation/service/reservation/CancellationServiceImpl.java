@@ -68,7 +68,7 @@ public class CancellationServiceImpl implements CancellationService {
     }
 
     @Transactional
-    public void cancelAllReservations() {
+    public void deleteAllReservations() {
 
         List<Reservation> reservations = reservationRepository.findAll();
         reservations.forEach(t -> {
