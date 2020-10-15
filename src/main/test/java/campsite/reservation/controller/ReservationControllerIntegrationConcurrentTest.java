@@ -3,6 +3,8 @@ package campsite.reservation.controller;
 import campsite.reservation.model.in.BookingDates;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.service.reservation.CancellationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,14 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
@@ -44,6 +44,9 @@ class ReservationControllerIntegrationConcurrentTest {
     @Autowired
     CancellationService cancellationService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Value("${app.spots-num}")
     int spots;
 
@@ -54,9 +57,6 @@ class ReservationControllerIntegrationConcurrentTest {
     public void beforeEach() {
         cancellationService.deleteAllReservations();
     }
-
-    private final String siteAtFullCapacityMsg = "{\"message\":\"Reservation couldn't proceed because campsite " +
-            "is at full capacity on one or more days, please choose other dates\"}";
 
     // please note that departure is not included : [arrival, departure)
     private final BookingDates bookingDates1 = new BookingDates("2020-Nov-02", "2020-Nov-05");
@@ -84,23 +84,39 @@ class ReservationControllerIntegrationConcurrentTest {
 
         IntStream.range(1, 1000).forEach(i -> {
             CompletableFuture<Void> thread =
-                    CompletableFuture.runAsync(() -> {
-                        webTestClient
-                                .post()
-                                .uri("http://localhost:" + port + "/api/reservation")
-                                .body(Mono.just(generateReservationPayload()), ReservationPayload.class)
-                                .exchange()
-                                .expectStatus().isOk()
-                                .expectBody(String.class)
-                                .consumeWith(t -> {
-                                    String result = t.getResponseBody();
-                                    assertTrue(result.startsWith("{\"bookingReference\":\"") || result.equals(siteAtFullCapacityMsg));
-                                });
-                    } );
+                CompletableFuture.runAsync(() -> {
+                webTestClient
+                    .post()
+                    .uri("http://localhost:" + port + "/api/reservation")
+                    .body(Mono.just(generateReservationPayload()), ReservationPayload.class)
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(String.class)
+                    .consumeWith(t -> {
+
+                        System.out.println("DIMA " + t.getResponseBody());
+
+                        Map<String, String> map = parse(t.getResponseBody());
+                        System.out.println("DIMA " + map);
+
+                        assertTrue(map.containsKey(messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault()))
+                                || (map.containsKey("bookingReference") && map.get("bookingReference").length() == 36));
+                    });
+                } );
 
             threads.add(thread);
         });
 
         threads.forEach(CompletableFuture::join);
+    }
+
+    private Map<String, String> parse(String jsonString) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            return objectMapper.readValue(jsonString, Map.class);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 }

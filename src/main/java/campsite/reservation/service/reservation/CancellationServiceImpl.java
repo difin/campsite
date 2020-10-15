@@ -76,7 +76,7 @@ public class CancellationServiceImpl implements CancellationService {
                     cancelInPresentTransaction(new BookingReferencePayload(t.getBookingRef()));
 
             if (cancellationStatus != CancellationStatus.SUCCESS){
-                throw new CampsiteException("Failed cancelling all reservations");
+                throw new CampsiteException("Failed deleting all reservations");
             }
         });
     }

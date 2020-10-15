@@ -13,10 +13,12 @@ import campsite.reservation.model.out.BookingReference;
 import campsite.reservation.service.ManagedDatesFacade;
 import campsite.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,18 +32,21 @@ public class ReservationServiceImpl implements ReservationService {
     private ManagedDatesFacade managedDatesFacade;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
+    private MessageSource messageSource;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
                                   ManagedDatesFacade managedDatesFacade,
                                   ReactiveExecutionService reactiveExecutionService,
-                                  ModelConverter modelConverter){
+                                  ModelConverter modelConverter,
+                                  MessageSource messageSource){
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
         this.managedDatesFacade = managedDatesFacade;
         this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
+        this.messageSource = messageSource;
     }
 
     public Mono<BookingReference> reserve(ReservationPayload payload) {
@@ -87,8 +92,10 @@ public class ReservationServiceImpl implements ReservationService {
     private void validateCampsiteAvailability(RequestDates requestDates, int availableDaysCount){
 
         if (DAYS.between(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate()) > availableDaysCount){
-            throw new CampsiteException("Reservation couldn't proceed because campsite is at full capacity on one or more days, " +
-                    "please choose other dates");
+
+            throw new CampsiteException(
+                    messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault())
+            );
         }
     }
 }
