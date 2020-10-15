@@ -93,14 +93,13 @@ class ReservationControllerIntegrationConcurrentTest {
                     .expectStatus().isOk()
                     .expectBody(String.class)
                     .consumeWith(t -> {
-
-                        System.out.println("DIMA " + t.getResponseBody());
-
                         Map<String, String> map = parse(t.getResponseBody());
-                        System.out.println("DIMA " + map);
-
-                        assertTrue(map.containsKey(messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault()))
-                                || (map.containsKey("bookingReference") && map.get("bookingReference").length() == 36));
+                        assertTrue(
+                    (map.containsKey("message") &&
+                                map.get("message").equals(messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault())))
+                            ||
+                            (map.containsKey("bookingReference")
+                                    && map.get("bookingReference").length() == 36));
                     });
                 } );
 
