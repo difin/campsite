@@ -2,7 +2,6 @@ package campsite.reservation.controller;
 
 import campsite.reservation.model.in.BookingDates;
 import campsite.reservation.model.in.ReservationPayload;
-import campsite.reservation.model.out.BookingReference;
 import campsite.reservation.service.reservation.CancellationService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Mono;
 
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.hasLength;
 
 @TestPropertySource(
         properties = {
@@ -53,48 +51,62 @@ class ReservationControllerIntegrationTest {
     private final BookingDates bookingDates = new BookingDates(arrival, departure);
     private final ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-    private final Supplier<BookingReference>
-            successFunc =
-                () -> webTestClient
-                    .post()
-                    .uri("http://localhost:" + port + "/api/reservation")
-                    .body(BodyInserters.fromObject(payload))
-                    .exchange()
-                    .expectStatus().isOk()
-                    .returnResult(BookingReference.class)
-                    .getResponseBody()
-                    .blockFirst();
+    private final String siteAtFullCapacityMessage = "{\"message\":\"Reservation couldn't proceed because campsite " +
+            "is at full capacity on one or more days, please choose other dates\"}";
 
     @DisplayName("When creating a new reservation and there are available dates then reservations are creates successfully")
     @Test
     public void makingReservationTest() {
 
-        BookingReference result = successFunc.get();
+        // For future reference - getting result and closing stream
+        //
+        // BookingReference result =
+        //     webTestClient
+        //         .post()
+        //         .uri("http://localhost:" + port + "/api/reservation")
+        //         .body(Mono.just(payload), ReservationPayload.class)
+        //         .exchange()
+        //         .expectStatus().isOk()
+        //         .expectBody(BookingReference.class)
+        //         .returnResult()
+        //         .getResponseBody();
 
-        assertEquals(36, result.getBookingReference().length());
+        webTestClient
+                .post()
+                .uri("http://localhost:" + port + "/api/reservation")
+                .body(Mono.just(payload), ReservationPayload.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.bookingReference").exists()
+                    .jsonPath("$.bookingReference").value(hasLength(36));
+
     }
 
-    @DisplayName("A date can be booked only the specified maximum number of times")
+    @DisplayName("A date can be booked only the specified maximum number of times and then error message it returned")
     @Test
     public void reservingSameDatesTest() {
 
-        IntStream.range(0, spots).forEach(i -> {
-            BookingReference result = successFunc.get();
-            assertEquals(36, result.getBookingReference().length());
-        });
+        Runnable successFunc =
+                () -> webTestClient
+                        .post()
+                        .uri("http://localhost:" + port + "/api/reservation")
+                        .body(Mono.just(payload), ReservationPayload.class)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectBody()
+                            .jsonPath("$.bookingReference").exists()
+                            .jsonPath("$.bookingReference").value(hasLength(36));
 
-        String errorMessage =
-            webTestClient
-                .post()
-                .uri("http://localhost:" + port + "/api/reservation")
-                .body(BodyInserters.fromObject(payload))
-                .exchange()
-                .expectStatus().isOk()
-                .returnResult(String.class)
-                .getResponseBody()
-                .blockFirst();
+        IntStream.range(0, spots).forEach(i -> successFunc.run());
 
-        assertEquals("{\"message\":\"Reservation couldn't proceed because campsite is at full capacity on one or more days, please choose other dates\"}",
-                errorMessage);
+        webTestClient
+            .post()
+            .uri("http://localhost:" + port + "/api/reservation")
+            .body(Mono.just(payload), ReservationPayload.class)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String.class)
+                .isEqualTo(siteAtFullCapacityMessage);
     }
 }
