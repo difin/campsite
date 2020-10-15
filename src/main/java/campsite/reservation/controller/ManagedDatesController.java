@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.util.Optional;
+
 @Controller
 public class ManagedDatesController {
 
@@ -33,8 +35,10 @@ public class ManagedDatesController {
 			@RequestParam(name="departure") String departure) {
 
 		return managedDatesFacade
-			.getAvailableDates(methodParamValidator
-				.validateRequestDates(new RequestDates(arrival, departure)));
+			.getAvailableDates(
+					Optional.of(
+							methodParamValidator.validateRequestDates(
+									new RequestDates(arrival, departure))));
 	}
 
 	@GetMapping(
@@ -43,6 +47,6 @@ public class ManagedDatesController {
 	)
 	public Flux<AvailableDateModel> getAvailableDatesDefaultRange() {
 
-		return managedDatesFacade.getAvailableDates();
+		return managedDatesFacade.getAvailableDates(Optional.empty());
 	}
 }

@@ -13,25 +13,22 @@ import java.util.List;
 @Repository
 public interface ManagedDateRepository extends JpaRepository<ManagedDate, Integer> {
 
-    String GET_AVAILABLE_DATES = "select md                               " +
-                                 "from ManagedDate md                     " +
-                                 "where md.reservedDates.size < :spotsNum " +
-                                 "and md.date >= :arrival                 " +
-                                 "and md.date <= :departure               ";
+    String SELECT_DATES_RANGE = "select md                 " +
+                                "from ManagedDate md       " +
+                                "where md.date >= :arrival " +
+                                "and md.date <= :departure ";
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query(GET_AVAILABLE_DATES)
-    List<ManagedDate> getAvailableDatesLocking(int spotsNum, LocalDate arrival, LocalDate departure);
+    @Query(SELECT_DATES_RANGE)
+    List<ManagedDate> lockDates(LocalDate arrival, LocalDate departure);
 
-    @Lock(LockModeType.NONE)
-    @Query(GET_AVAILABLE_DATES)
-    List<ManagedDate> getAvailableDatesNotLocking(int spotsNum, LocalDate arrival, LocalDate departure);
-
-    @Query("select md                 " +
-           "from ManagedDate md       " +
-           "where md.date >= :arrival " +
-           "and md.date <= :departure "
-    )
+    @Query(SELECT_DATES_RANGE)
     List<ManagedDate> getManagedDates(LocalDate arrival, LocalDate departure);
 
+    @Query("select md                                " +
+            "from ManagedDate md                     " +
+            "where md.reservedDates.size < :spotsNum " +
+            "and md.date >= :arrival                 " +
+            "and md.date <= :departure               ")
+    List<ManagedDate> getAvailableDates(int spotsNum, LocalDate arrival, LocalDate departure);
 }

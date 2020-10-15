@@ -53,7 +53,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     public Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
 
-        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesEagerLocking(payload.getBookingDates());
+        managedDatesFacade.lockDates(payload.getBookingDates());
+
+        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(payload.getBookingDates());
 
         validateCampsiteAvailability(payload.getBookingDates(), availableDates.size());
 

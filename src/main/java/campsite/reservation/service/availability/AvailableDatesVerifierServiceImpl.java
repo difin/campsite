@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifierService {
@@ -35,32 +36,29 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
         this.spotsNum = spotsNum;
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(){
+    public Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDatesOptional) {
 
-        return getAvailableDates(
+        RequestDates requestDates = requestDatesOptional.orElse(
                 new RequestDates(
                         LocalDate.now().plusDays(1),
                         LocalDate.now().plusMonths(1))
         );
-    }
 
-    public Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates) {
-
-        return reactiveExecutionService.exec(() -> getAvailableDatesEagerNotLocking(requestDates))
+        return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDates))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    public List<ManagedDate> getAvailableDatesEagerLocking(RequestDates requestDates) {
+    public List<ManagedDate> lockDates(RequestDates requestDates) {
 
-        return managedDateRepository.getAvailableDatesLocking(spotsNum,
+        return managedDateRepository.lockDates(
                 requestDates.getArrivalAsDate(),
                 requestDates.getDepartureAsDate().minusDays(1));
     }
 
-    public List<ManagedDate> getAvailableDatesEagerNotLocking(RequestDates requestDates) {
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
 
-        return managedDateRepository.getAvailableDatesNotLocking(spotsNum,
+        return managedDateRepository.getAvailableDates(spotsNum,
                 requestDates.getArrivalAsDate(),
                 requestDates.getDepartureAsDate().minusDays(1));
     }

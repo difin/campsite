@@ -6,11 +6,11 @@ import campsite.reservation.model.out.AvailableDateModel;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AvailableDatesVerifierService {
 
-    Flux<AvailableDateModel> getAvailableDates();
-    Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates);
-    List<ManagedDate> getAvailableDatesEagerLocking(RequestDates requestDates);
-    List<ManagedDate> getAvailableDatesEagerNotLocking(RequestDates requestDates);
+    Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDates);
+    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
+    List<ManagedDate> lockDates(RequestDates requestDates);
 }
