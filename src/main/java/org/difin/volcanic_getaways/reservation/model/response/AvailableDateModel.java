@@ -1,4 +1,4 @@
-package org.difin.volcanic_getaways.reservation.model.out;
+package org.difin.volcanic_getaways.reservation.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

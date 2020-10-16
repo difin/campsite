@@ -1,4 +1,4 @@
-package org.difin.volcanic_getaways.reservation.model.in;
+package org.difin.volcanic_getaways.reservation.model.request;
 
 import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 import org.difin.volcanic_getaways.reservation.validation.DateFormatValid;

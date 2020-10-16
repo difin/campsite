@@ -1,10 +1,10 @@
 package org.difin.volcanic_getaways.reservation.service.reservation;
 
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
-import org.difin.volcanic_getaways.reservation.model.in.RequestDates;
-import org.difin.volcanic_getaways.reservation.model.in.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.model.out.BookingReference;
-import org.difin.volcanic_getaways.reservation.model.out.ReservationModel;
+import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
+import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
+import org.difin.volcanic_getaways.reservation.model.response.BookingReference;
+import org.difin.volcanic_getaways.reservation.model.response.ReservationModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

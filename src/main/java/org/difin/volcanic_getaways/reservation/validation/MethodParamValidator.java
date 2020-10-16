@@ -1,8 +1,8 @@
 package org.difin.volcanic_getaways.reservation.validation;
 
 import org.difin.volcanic_getaways.reservation.exception.VolcanicGetawaysException;
-import org.difin.volcanic_getaways.reservation.model.in.BookingReferencePayload;
-import org.difin.volcanic_getaways.reservation.model.in.RequestDates;
+import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
+import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;

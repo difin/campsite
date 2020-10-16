@@ -1,6 +1,6 @@
 package org.difin.volcanic_getaways.reservation.validation;
 
-import org.difin.volcanic_getaways.reservation.model.in.BookingDates;
+import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

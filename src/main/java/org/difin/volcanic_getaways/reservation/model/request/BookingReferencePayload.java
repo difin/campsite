@@ -1,4 +1,4 @@
-package org.difin.volcanic_getaways.reservation.model.in;
+package org.difin.volcanic_getaways.reservation.model.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

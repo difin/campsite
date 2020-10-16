@@ -1,8 +1,8 @@
 package org.difin.volcanic_getaways.reservation.controller;
 
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
-import org.difin.volcanic_getaways.reservation.model.in.BookingDates;
-import org.difin.volcanic_getaways.reservation.model.in.ReservationPayload;
+import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
+import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationService;
 import com.fasterxml.jackson.core.JsonProcessingException;

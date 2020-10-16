@@ -1,8 +1,7 @@
-package org.difin.volcanic_getaways.reservation.model.out;
+package org.difin.volcanic_getaways.reservation.model.response;
 
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor

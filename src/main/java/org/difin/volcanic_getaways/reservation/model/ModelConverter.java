@@ -4,10 +4,10 @@ import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
 import org.difin.volcanic_getaways.reservation.model.internal.UpdateStatus;
-import org.difin.volcanic_getaways.reservation.model.out.ActionResult;
-import org.difin.volcanic_getaways.reservation.model.out.AvailableDateModel;
-import org.difin.volcanic_getaways.reservation.model.out.BookingReference;
-import org.difin.volcanic_getaways.reservation.model.out.ReservationModel;
+import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
+import org.difin.volcanic_getaways.reservation.model.response.AvailableDateModel;
+import org.difin.volcanic_getaways.reservation.model.response.BookingReference;
+import org.difin.volcanic_getaways.reservation.model.response.ReservationModel;
 import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 import org.springframework.stereotype.Component;
 

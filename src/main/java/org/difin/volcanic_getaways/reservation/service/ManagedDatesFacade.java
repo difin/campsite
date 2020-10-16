@@ -1,8 +1,8 @@
 package org.difin.volcanic_getaways.reservation.service;
 
 import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
-import org.difin.volcanic_getaways.reservation.model.out.AvailableDateModel;
-import org.difin.volcanic_getaways.reservation.model.in.RequestDates;
+import org.difin.volcanic_getaways.reservation.model.response.AvailableDateModel;
+import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import reactor.core.publisher.Flux;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 package org.difin.volcanic_getaways.reservation.service.reservation;
 
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
-import org.difin.volcanic_getaways.reservation.model.in.BookingReferencePayload;
-import org.difin.volcanic_getaways.reservation.model.in.ReservationPayload;
+import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
+import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
 import org.difin.volcanic_getaways.reservation.model.internal.UpdateStatus;
-import org.difin.volcanic_getaways.reservation.model.out.ActionResult;
+import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

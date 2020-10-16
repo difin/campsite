@@ -2,7 +2,7 @@ package org.difin.volcanic_getaways.reservation.service;
 
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
-import org.difin.volcanic_getaways.reservation.model.in.BookingReferencePayload;
+import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationServiceImpl;
 import org.assertj.core.util.Lists;
