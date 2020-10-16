@@ -24,4 +24,15 @@
         <createSequence sequenceName="managed_date_id_seq"/>
     </changeSet>
 
+    <changeSet  author="dmitriyf"  id="MANAGED_DATE_IX1_CR">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="MANAGED_DATE_IX1"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="MANAGED_DATE_IX1" tableName="MANAGED_DATE" unique="true">
+            <column name="DATE" />
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

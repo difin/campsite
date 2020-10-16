@@ -26,4 +26,15 @@
         <createSequence sequenceName="RESERVATION_ID_SEQ"/>
     </changeSet>
 
+    <changeSet  author="dmitriyf"  id="RESERVATION_IX_CR">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="RESERVATION_IX1"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="RESERVATION_IX1" tableName="RESERVATION" unique="true">
+            <column name="BOOKING_REF" />
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

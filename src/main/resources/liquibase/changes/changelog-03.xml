@@ -46,5 +46,17 @@
                                  deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="ID" referencedTableName="RESERVATION" validate="true"/>
     </changeSet>
+
+    <changeSet  author="dmitriyf"  id="RESERVED_DATE_IX_CR">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="RESERVED_DATE_IX1"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="RESERVED_DATE_IX1" tableName="RESERVED_DATE" unique="true">
+            <column name="MANAGED_DATE_ID" />
+            <column name="RESERVATION_ID" />
+        </createIndex>
+    </changeSet>
     
 </databaseChangeLog>
