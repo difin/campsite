@@ -1,6 +1,6 @@
 package org.difin.volcanic_getaways.reservation.validation;
 
-import org.difin.volcanic_getaways.reservation.service.common.DateConversionService;
+import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -16,7 +16,7 @@ public class DateFormatValidator implements ConstraintValidator<DateFormatValid,
         boolean isValid = true;
 
         try {
-            DateConversionService.stringToDate(date);
+            DateConversionUtils.stringToDate(date);
         }
         catch (DateTimeParseException e) {
             isValid = false;

@@ -8,7 +8,7 @@ import org.difin.volcanic_getaways.reservation.model.out.ActionResult;
 import org.difin.volcanic_getaways.reservation.model.out.AvailableDateModel;
 import org.difin.volcanic_getaways.reservation.model.out.BookingReference;
 import org.difin.volcanic_getaways.reservation.model.out.ReservationModel;
-import org.difin.volcanic_getaways.reservation.service.common.DateConversionService;
+import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ public class ModelConverter {
                         .stream()
                         .map(t -> t.getManagedDate().getDate())
                         .sorted()
-                        .map(DateConversionService::dateToString)
+                        .map(DateConversionUtils::dateToString)
                         .collect(Collectors.toList()))
                 .build();
     }

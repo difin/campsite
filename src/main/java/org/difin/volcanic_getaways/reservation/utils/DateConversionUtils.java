@@ -1,10 +1,10 @@
-package org.difin.volcanic_getaways.reservation.service.common;
+package org.difin.volcanic_getaways.reservation.utils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class DateConversionService {
+public class DateConversionUtils {
 
     public static LocalDate stringToDate(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);

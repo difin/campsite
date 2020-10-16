@@ -1,6 +1,6 @@
 package org.difin.volcanic_getaways.reservation.model.in;
 
-import org.difin.volcanic_getaways.reservation.service.common.DateConversionService;
+import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 import org.difin.volcanic_getaways.reservation.validation.DateFormatValid;
 import org.difin.volcanic_getaways.reservation.validation.DateWithinOneMonth;
 import org.difin.volcanic_getaways.reservation.validation.DepartureAfterArrivalValid;
@@ -20,8 +20,8 @@ import java.time.LocalDate;
 public class RequestDates {
 
     public RequestDates(LocalDate arrival, LocalDate departure) {
-        this.arrival = DateConversionService.dateToString(arrival);
-        this.departure = DateConversionService.dateToString(departure);
+        this.arrival = DateConversionUtils.dateToString(arrival);
+        this.departure = DateConversionUtils.dateToString(departure);
     }
 
     @ApiModelProperty(position = 1, example = "2020-Oct-10")
@@ -36,10 +36,10 @@ public class RequestDates {
     private String departure;
 
     public LocalDate getArrivalAsDate(){
-        return DateConversionService.stringToDate(arrival);
+        return DateConversionUtils.stringToDate(arrival);
     }
 
     public LocalDate getDepartureAsDate(){
-        return DateConversionService.stringToDate(departure);
+        return DateConversionUtils.stringToDate(departure);
     }
 }
