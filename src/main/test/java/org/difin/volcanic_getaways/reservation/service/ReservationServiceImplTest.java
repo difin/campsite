@@ -10,6 +10,7 @@ import org.difin.volcanic_getaways.reservation.model.in.BookingDates;
 import org.difin.volcanic_getaways.reservation.model.in.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationServiceImpl;
 import org.assertj.core.util.Lists;
+import org.difin.volcanic_getaways.reservation.validation.MethodParamValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.MessageSource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,11 +44,11 @@ class ReservationServiceImplTest {
     @Mock
     private ManagedDatesFacade managedDatesFacade;
 
+    @Mock
+    private MethodParamValidator methodParamValidator;
+
     @InjectMocks
     private ReservationServiceImpl reservationService;
-
-    @Mock
-    private MessageSource messageSource;
 
     private final String arrival = "2020-Nov-01";
     private final String departure = "2020-Nov-04";
@@ -100,6 +99,7 @@ class ReservationServiceImplTest {
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
+        doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 0);
 
         Assertions.assertThrows(VolcanicGetawaysException.class, () ->
                 reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
@@ -116,8 +116,7 @@ class ReservationServiceImplTest {
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
-        when(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault()))
-                .thenReturn("some message");
+        doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 2);
 
         Assertions.assertThrows(VolcanicGetawaysException.class, () ->
                 reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));

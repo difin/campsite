@@ -5,7 +5,6 @@ import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.entity.ReservedDate;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
-import org.difin.volcanic_getaways.reservation.exception.VolcanicGetawaysException;
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.in.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.in.ReservationPayload;
@@ -13,19 +12,16 @@ import org.difin.volcanic_getaways.reservation.model.out.BookingReference;
 import org.difin.volcanic_getaways.reservation.model.out.ReservationModel;
 import org.difin.volcanic_getaways.reservation.service.ManagedDatesFacade;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
+import org.difin.volcanic_getaways.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -35,7 +31,7 @@ public class ReservationServiceImpl implements ReservationService {
     private ManagedDatesFacade managedDatesFacade;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
-    private MessageSource messageSource;
+    private MethodParamValidator methodParamValidator;
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
@@ -43,13 +39,13 @@ public class ReservationServiceImpl implements ReservationService {
                                   ManagedDatesFacade managedDatesFacade,
                                   ReactiveExecutionService reactiveExecutionService,
                                   ModelConverter modelConverter,
-                                  MessageSource messageSource){
+                                  MethodParamValidator methodParamValidator){
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
         this.managedDatesFacade = managedDatesFacade;
         this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
-        this.messageSource = messageSource;
+        this.methodParamValidator = methodParamValidator;
     }
 
     public Mono<BookingReference> reserve(ReservationPayload payload) {
@@ -65,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(Optional.of(payload.getBookingDates()));
 
-        validateSiteAvailability(payload.getBookingDates(), availableDates.size());
+        methodParamValidator.validateSiteAvailability(payload.getBookingDates(), availableDates.size());
 
         Reservation reservation = new Reservation();
 
@@ -92,16 +88,6 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    private void validateSiteAvailability(RequestDates requestDates, int availableDaysCount){
-
-        if (DAYS.between(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate()) > availableDaysCount){
-
-            throw new VolcanicGetawaysException(
-                    messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault())
-            );
-        }
-    }
-
     public Flux<ReservationModel> getReservations(Optional<RequestDates> requestDates) {
 
         return reactiveExecutionService.exec(() ->
@@ -117,9 +103,7 @@ public class ReservationServiceImpl implements ReservationService {
                         LocalDate.now().plusDays(1),
                         LocalDate.now().plusMonths(1)));
 
-        List<Reservation> reservations = reservationRepository
+        return reservationRepository
                 .findReservationsForDates(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate());
-
-        return reservations;
     }
 }
