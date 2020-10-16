@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -51,11 +52,12 @@ public class ReservationServiceImpl implements ReservationService {
     public Mono<BookingReference> reserve(ReservationPayload payload) {
 
         return reactiveExecutionService.execTransaction(() ->
-                reserveInPresentTransaction(payload, Optional.empty()))
+                reserveInExistingTx(payload, Optional.empty()))
                 .map(modelConverter::reservationEntityToBookingReferenceDTO);
     }
 
-    public Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef){
+    @Transactional(Transactional.TxType.MANDATORY)
+    public Reservation reserveInExistingTx(ReservationPayload payload, Optional<String> bookingRef){
 
         managedDatesFacade.lockDates(payload.getBookingDates());
 

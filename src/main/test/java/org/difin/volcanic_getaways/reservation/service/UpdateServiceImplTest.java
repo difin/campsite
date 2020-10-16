@@ -77,9 +77,9 @@ class UpdateServiceImplTest {
         Reservation reservation = Reservation.builder()
                 .id(reservationId).name(name).email(email).bookingRef(bookingRef).reservedDates(Lists.emptyList()).build();
 
-        when(cancellationService.cancelInPresentTransaction(bookingReferencePayload)).thenReturn(CancellationStatus.SUCCESS);
+        when(cancellationService.cancelReservationInExistingTx(bookingReferencePayload)).thenReturn(CancellationStatus.SUCCESS);
 
-        UpdateStatus actual = updateService.updateReservationInPresentTransaction(bookingReferencePayload, reservationPayload);
+        UpdateStatus actual = updateService.updateReservationInExistingTx(bookingReferencePayload, reservationPayload);
 
         assertEquals(UpdateStatus.SUCCESS, actual);
     }
@@ -98,9 +98,9 @@ class UpdateServiceImplTest {
         Reservation reservation = Reservation.builder()
                 .id(reservationId).name(name).email(email).bookingRef(bookingRef).reservedDates(Lists.emptyList()).build();
 
-        when(cancellationService.cancelInPresentTransaction(bookingReferencePayload)).thenReturn(CancellationStatus.NOT_FOUND);
+        when(cancellationService.cancelReservationInExistingTx(bookingReferencePayload)).thenReturn(CancellationStatus.NOT_FOUND);
 
-        UpdateStatus actual = updateService.updateReservationInPresentTransaction(bookingReferencePayload, reservationPayload);
+        UpdateStatus actual = updateService.updateReservationInExistingTx(bookingReferencePayload, reservationPayload);
 
         assertEquals(UpdateStatus.NOT_FOUND, actual);
     }

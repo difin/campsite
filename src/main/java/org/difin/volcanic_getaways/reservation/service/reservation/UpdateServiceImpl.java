@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -34,14 +35,15 @@ public class UpdateServiceImpl implements UpdateService {
 
     public Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
         return reactiveExecutionService.execTransaction(() ->
-                updateReservationInPresentTransaction(bookingReferencePayload, payload))
+                updateReservationInExistingTx(bookingReferencePayload, payload))
                 .map(modelConverter::updateStatusToDTO);
     }
 
-    public UpdateStatus updateReservationInPresentTransaction(BookingReferencePayload bookingReferencePayload,
-                                                              ReservationPayload payload) {
+    @Transactional(Transactional.TxType.MANDATORY)
+    public UpdateStatus updateReservationInExistingTx(BookingReferencePayload bookingReferencePayload,
+                                                      ReservationPayload payload) {
 
-        CancellationStatus cancellationStatus = cancellationService.cancelInPresentTransaction(bookingReferencePayload);
+        CancellationStatus cancellationStatus = cancellationService.cancelReservationInExistingTx(bookingReferencePayload);
         UpdateStatus updateStatus = null;
 
         switch (cancellationStatus) {
@@ -49,7 +51,7 @@ public class UpdateServiceImpl implements UpdateService {
                 updateStatus = UpdateStatus.NOT_FOUND;
                 break;
             case SUCCESS:
-                reservationService.reserveInPresentTransaction(payload, Optional.of(bookingReferencePayload.getBookingReference()));
+                reservationService.reserveInExistingTx(payload, Optional.of(bookingReferencePayload.getBookingReference()));
                 updateStatus = UpdateStatus.SUCCESS;
                 break;
         }

@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ReservationService {
 
     Mono<BookingReference> reserve(ReservationPayload payload);
-    Reservation reserveInPresentTransaction(ReservationPayload payload, Optional<String> bookingRef);
+    Reservation reserveInExistingTx(ReservationPayload payload, Optional<String> bookingRef);
     List<Reservation> getReservationsBlocking(Optional<RequestDates> requestDates);
     Flux<ReservationModel> getReservations(Optional<RequestDates> requestDates);
 }

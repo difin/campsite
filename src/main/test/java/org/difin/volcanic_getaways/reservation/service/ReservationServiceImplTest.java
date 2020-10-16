@@ -76,7 +76,7 @@ class ReservationServiceImplTest {
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
 
-        Reservation actual = reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef));
+        Reservation actual = reservationService.reserveInExistingTx(payload, Optional.of(bookingRef));
 
         ArgumentCaptor<ReservedDate> argumentCaptor = ArgumentCaptor.forClass(ReservedDate.class);
         verify(reservedDateRepository, times(3)).save(argumentCaptor.capture());
@@ -102,7 +102,7 @@ class ReservationServiceImplTest {
         doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 0);
 
         Assertions.assertThrows(VolcanicGetawaysException.class, () ->
-                reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
+                reservationService.reserveInExistingTx(payload, Optional.of(bookingRef)));
     }
 
     @DisplayName("When making a reservation and only 2 out of 3 requested dates are available then VolcanicGetawaysException is thrown")
@@ -119,6 +119,6 @@ class ReservationServiceImplTest {
         doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 2);
 
         Assertions.assertThrows(VolcanicGetawaysException.class, () ->
-                reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
+                reservationService.reserveInExistingTx(payload, Optional.of(bookingRef)));
     }
 }
