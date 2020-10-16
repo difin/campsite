@@ -1,13 +1,12 @@
 package org.difin.volcanic_getaways.reservation.model.request;
 
-import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
-import org.difin.volcanic_getaways.reservation.validation.DateFormatValid;
 import org.difin.volcanic_getaways.reservation.validation.DateWithinOneMonth;
-import org.difin.volcanic_getaways.reservation.validation.DepartureAfterArrivalValid;
-import org.difin.volcanic_getaways.reservation.validation.FutureReservationDate;
+import org.difin.volcanic_getaways.reservation.validation.DepartureAfterArrival;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -16,30 +15,25 @@ import java.time.LocalDate;
 @NotNull
 @NoArgsConstructor
 @AllArgsConstructor
-@DepartureAfterArrivalValid(message = "{volcanic_getaways.validation.departure.before.arrival}")
+@DepartureAfterArrival(message = "{volcanic_getaways.validation.departure.before.arrival}")
 public class RequestDates {
 
-    public RequestDates(LocalDate arrival, LocalDate departure) {
-        this.arrival = DateConversionUtils.dateToString(arrival);
-        this.departure = DateConversionUtils.dateToString(departure);
-    }
-
     @ApiModelProperty(position = 1, example = "2020-Oct-10")
-    @DateFormatValid(message = "{volcanic_getaways.validation.illegal.arrival.date.format}")
-    @FutureReservationDate(message = "Arrival {volcanic_getaways.validation.date.cannot.be.in.the.past}")
-    private String arrival;
+    @DateTimeFormat(pattern = "uuuu-MMM-dd")
+    @Future(message = "Arrival {volcanic_getaways.validation.date.cannot.be.in.the.past}")
+    private LocalDate arrival;
 
     @ApiModelProperty(position = 2, example = "2020-Oct-10")
-    @DateFormatValid(message = "{volcanic_getaways.validation.illegal.departure.date.format}")
-    @FutureReservationDate(message = "Departure {volcanic_getaways.validation.date.cannot.be.in.the.past}")
+    @DateTimeFormat(pattern = "uuuu-MMM-dd")
     @DateWithinOneMonth(message = "{volcanic_getaways.validation.departure.date.too.far}")
-    private String departure;
+    @Future(message = "Departure {volcanic_getaways.validation.date.cannot.be.in.the.past}")
+    private LocalDate departure;
 
     public LocalDate getArrivalAsDate(){
-        return DateConversionUtils.stringToDate(arrival);
+        return arrival;
     }
 
     public LocalDate getDepartureAsDate(){
-        return DateConversionUtils.stringToDate(departure);
+        return departure;
     }
 }

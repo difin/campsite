@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 @Component
 @Order(0)
 public class VolcanicGetawaysApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
@@ -20,6 +22,8 @@ public class VolcanicGetawaysApplicationListener implements ApplicationListener<
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+
+        Locale.setDefault(Locale.ENGLISH);
 
         managedDatesFacade.generateManagedDates();
     }

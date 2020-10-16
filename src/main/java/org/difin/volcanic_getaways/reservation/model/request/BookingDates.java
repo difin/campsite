@@ -1,5 +1,6 @@
 package org.difin.volcanic_getaways.reservation.model.request;
 
+import org.difin.volcanic_getaways.reservation.utils.DateConversionUtils;
 import org.difin.volcanic_getaways.reservation.validation.BookingLengthLimit;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
@@ -19,6 +20,7 @@ public class BookingDates extends RequestDates{
     }
 
     public BookingDates(String arrival, String departure) {
-        super(arrival, departure);
+        super(DateConversionUtils.stringToDate(arrival),
+                DateConversionUtils.stringToDate(departure));
     }
 }

@@ -5,7 +5,6 @@ import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -16,15 +15,9 @@ public class BookingLengthLimitValidator implements ConstraintValidator<BookingL
 
     public boolean isValid(BookingDates bookingDates, ConstraintValidatorContext context) {
 
-        try {
-            LocalDate arrival = bookingDates.getArrivalAsDate();
-            LocalDate departure = bookingDates.getDepartureAsDate();
+            LocalDate arrival = bookingDates.getArrival();
+            LocalDate departure = bookingDates.getDeparture();
 
             return DAYS.between(arrival, departure) <= 3;
-        }
-        catch (DateTimeParseException e) {
-            // if date is not parsable, another more precise validation error will be shows to user
-            return true;
-        }
     }
 }

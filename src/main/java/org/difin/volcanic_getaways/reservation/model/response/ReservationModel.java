@@ -1,7 +1,9 @@
 package org.difin.volcanic_getaways.reservation.model.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,5 +17,7 @@ public class ReservationModel {
     private String name;
     private String email;
     private String bookingRef;
-    private List<String> reservedDates;
+
+    @JsonFormat(pattern="uuuu-MMM-dd")
+    private List<LocalDate> reservedDates;
 }

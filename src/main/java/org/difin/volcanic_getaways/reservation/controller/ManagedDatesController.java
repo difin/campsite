@@ -5,10 +5,12 @@ import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.service.ManagedDatesFacade;
 import org.difin.volcanic_getaways.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -30,8 +32,10 @@ public class ManagedDatesController {
 			params = {"arrival" , "departure"},
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<AvailableDateModel> getAvailableDates(@RequestParam(name="arrival") String arrival,
-													  @RequestParam(name="departure") String departure) {
+	public Flux<AvailableDateModel> getAvailableDates(@RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+													  LocalDate arrival,
+													  @RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+													  LocalDate departure) {
 
 		return managedDatesFacade
 			.getAvailableDates(
