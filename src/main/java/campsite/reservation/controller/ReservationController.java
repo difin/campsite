@@ -1,18 +1,22 @@
 package campsite.reservation.controller;
 
 import campsite.reservation.model.in.BookingReferencePayload;
+import campsite.reservation.model.in.RequestDates;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.model.out.ActionResult;
 import campsite.reservation.model.out.BookingReference;
+import campsite.reservation.model.out.ReservationModel;
 import campsite.reservation.service.ReservationFacade;
 import campsite.reservation.validation.MethodParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 public class ReservationController {
@@ -28,7 +32,7 @@ public class ReservationController {
 	}
 
 	@PostMapping(
-			path = "reservation",
+			path = "reservations",
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -38,7 +42,7 @@ public class ReservationController {
 	}
 
 	@DeleteMapping(
-			path = "reservation/{bookingReference}",
+			path = "reservations/{bookingReference}",
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -49,7 +53,7 @@ public class ReservationController {
 	}
 
 	@PutMapping(
-			path = "reservation/{bookingReference}",
+			path = "reservations/{bookingReference}",
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -58,5 +62,32 @@ public class ReservationController {
 
 		return reservationFacade.updateReservation(
 				methodParamValidator.validateBookingReference(bookingReference), payload);
+	}
+
+	@GetMapping(
+			path = "reservations",
+			params = {"arrival" , "departure"},
+			produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public Flux<ReservationModel> getReservations(
+			@RequestParam(name="arrival") String arrival,
+			@RequestParam(name="departure") String departure) {
+
+		return reservationFacade
+				.getReservations(
+						Optional.of(
+							methodParamValidator.validateRequestDates(
+									new RequestDates(arrival, departure))));
+	}
+
+	@GetMapping(
+			path = "reservations",
+			produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public Flux<ReservationModel> getReservations() {
+
+		return reservationFacade
+				.getReservations(
+						Optional.empty());
 	}
 }

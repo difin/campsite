@@ -1,8 +1,10 @@
 package campsite.reservation.controller;
 
+import campsite.reservation.data.entity.Reservation;
 import campsite.reservation.model.in.BookingDates;
 import campsite.reservation.model.in.ReservationPayload;
 import campsite.reservation.service.reservation.CancellationService;
+import campsite.reservation.service.reservation.ReservationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
@@ -23,12 +25,13 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestPropertySource(
         properties = {
                 "spring.datasource.url=jdbc:h2:file:~/h2/campsite_test",
-                "app.spots-num=1"
+                "app.spots-num=10"
         }
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -45,10 +48,13 @@ class ReservationControllerIntegrationConcurrentTest {
     CancellationService cancellationService;
 
     @Autowired
+    ReservationService reservationService;
+
+    @Autowired
     private MessageSource messageSource;
 
     @Value("${app.spots-num}")
-    int spots;
+    int spotsOnSite;
 
     private final Faker faker = new Faker();
     private final Random random = new Random();
@@ -76,7 +82,7 @@ class ReservationControllerIntegrationConcurrentTest {
         return payload;
     }
 
-    @DisplayName("concurrent")
+    @DisplayName("When trying to reserve the same range of dates concurrently then only #spotsOnSite reservations succeeds and others fail site at full capacity message")
     @Test
     public void reservingSameDatesTest() {
 
@@ -87,7 +93,7 @@ class ReservationControllerIntegrationConcurrentTest {
                 CompletableFuture.runAsync(() -> {
                 webTestClient
                     .post()
-                    .uri("http://localhost:" + port + "/api/reservation")
+                    .uri("http://localhost:" + port + "/api/reservations")
                     .body(Mono.just(generateReservationPayload()), ReservationPayload.class)
                     .exchange()
                     .expectStatus().isOk()
@@ -107,6 +113,10 @@ class ReservationControllerIntegrationConcurrentTest {
         });
 
         threads.forEach(CompletableFuture::join);
+
+        List<Reservation> reservations = reservationService.getReservationsBlocking(Optional.empty());
+
+        assertEquals(spotsOnSite, reservations.size());
     }
 
     private Map<String, String> parse(String jsonString) {

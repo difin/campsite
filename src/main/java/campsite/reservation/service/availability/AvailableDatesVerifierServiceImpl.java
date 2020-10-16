@@ -38,13 +38,7 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
 
     public Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDatesOptional) {
 
-        RequestDates requestDates = requestDatesOptional.orElse(
-                new RequestDates(
-                        LocalDate.now().plusDays(1),
-                        LocalDate.now().plusMonths(1))
-        );
-
-        return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDates))
+        return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDatesOptional))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
@@ -56,7 +50,13 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
                 requestDates.getDepartureAsDate().minusDays(1));
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
+    public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDatesOptional) {
+
+        RequestDates requestDates = requestDatesOptional.orElse(
+                new RequestDates(
+                        LocalDate.now().plusDays(1),
+                        LocalDate.now().plusMonths(1))
+        );
 
         return managedDateRepository.getAvailableDates(spotsNum,
                 requestDates.getArrivalAsDate(),

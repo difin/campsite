@@ -1,5 +1,6 @@
 package campsite.reservation.model.in;
 
+import campsite.reservation.service.common.DateConversionService;
 import campsite.reservation.validation.DateFormatValid;
 import campsite.reservation.validation.DateWithinOneMonth;
 import campsite.reservation.validation.DepartureAfterArrivalValid;
@@ -9,8 +10,6 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 @Setter
 @Getter
@@ -21,8 +20,8 @@ import java.util.Locale;
 public class RequestDates {
 
     public RequestDates(LocalDate arrival, LocalDate departure) {
-        this.arrival = dateToString(arrival);
-        this.departure = dateToString(departure);
+        this.arrival = DateConversionService.dateToString(arrival);
+        this.departure = DateConversionService.dateToString(departure);
     }
 
     @ApiModelProperty(position = 1, example = "2020-Oct-10")
@@ -37,20 +36,10 @@ public class RequestDates {
     private String departure;
 
     public LocalDate getArrivalAsDate(){
-        return stringToDate(arrival);
+        return DateConversionService.stringToDate(arrival);
     }
 
     public LocalDate getDepartureAsDate(){
-        return stringToDate(departure);
-    }
-
-    private LocalDate stringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
-        return LocalDate.parse(date, formatter);
-    }
-
-    private String dateToString(LocalDate date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MMM-dd", Locale.ENGLISH);
-        return date.format(formatter);
+        return DateConversionService.stringToDate(departure);
     }
 }

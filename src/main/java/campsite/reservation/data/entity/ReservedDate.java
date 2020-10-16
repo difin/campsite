@@ -23,5 +23,5 @@ public class ReservedDate {
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "RESERVATION_ID", referencedColumnName = "ID", nullable = false)
-	private Reservation reservationId;
+	private Reservation reservation;
 }

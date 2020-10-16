@@ -30,12 +30,12 @@ public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
         return availableDatesVerifierService.getAvailableDates(requestDates);
     }
 
-    public List<ManagedDate> lockDates(RequestDates requestDates) {
-        return availableDatesVerifierService.lockDates(requestDates);
+    public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates) {
+        return availableDatesVerifierService.getAvailableDatesBlocking(requestDates);
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
-        return availableDatesVerifierService.getAvailableDatesBlocking(requestDates);
+    public List<ManagedDate> lockDates(RequestDates requestDates) {
+        return availableDatesVerifierService.lockDates(requestDates);
     }
 
     public void generateManagedDates() {

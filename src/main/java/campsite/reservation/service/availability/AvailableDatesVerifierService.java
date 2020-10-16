@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface AvailableDatesVerifierService {
 
     Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDates);
-    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
+    List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates);
     List<ManagedDate> lockDates(RequestDates requestDates);
 }

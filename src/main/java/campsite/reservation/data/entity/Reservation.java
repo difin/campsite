@@ -36,6 +36,6 @@ public class Reservation {
 	private String bookingRef;
 
 	@Getter
-	@OneToMany(mappedBy = "reservationId", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+	@OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	private List<ReservedDate> reservedDates;
 }

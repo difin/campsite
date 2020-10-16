@@ -19,10 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,9 @@ class ReservationServiceImplTest {
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
+
+    @Mock
+    private MessageSource messageSource;
 
     private final String arrival = "2020-Nov-01";
     private final String departure = "2020-Nov-04";
@@ -70,7 +75,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
 
         Reservation actual = reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef));
 
@@ -94,7 +99,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
 
         Assertions.assertThrows(CampsiteException.class, () ->
                 reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));
@@ -110,7 +115,9 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
+        when(messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault()))
+                .thenReturn("some message");
 
         Assertions.assertThrows(CampsiteException.class, () ->
                 reservationService.reserveInPresentTransaction(payload, Optional.of(bookingRef)));

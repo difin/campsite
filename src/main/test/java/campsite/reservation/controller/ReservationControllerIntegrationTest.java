@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.hasLength;
@@ -31,6 +33,9 @@ class ReservationControllerIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     CancellationService cancellationService;
@@ -63,7 +68,7 @@ class ReservationControllerIntegrationTest {
         // BookingReference result =
         //     webTestClient
         //         .post()
-        //         .uri("http://localhost:" + port + "/api/reservation")
+        //         .uri("http://localhost:" + port + "/api/reservations")
         //         .body(Mono.just(payload), ReservationPayload.class)
         //         .exchange()
         //         .expectStatus().isOk()
@@ -73,7 +78,7 @@ class ReservationControllerIntegrationTest {
 
         webTestClient
                 .post()
-                .uri("http://localhost:" + port + "/api/reservation")
+                .uri("http://localhost:" + port + "/api/reservations")
                 .body(Mono.just(payload), ReservationPayload.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -90,7 +95,7 @@ class ReservationControllerIntegrationTest {
         Runnable successFunc =
                 () -> webTestClient
                         .post()
-                        .uri("http://localhost:" + port + "/api/reservation")
+                        .uri("http://localhost:" + port + "/api/reservations")
                         .body(Mono.just(payload), ReservationPayload.class)
                         .exchange()
                         .expectStatus().isOk()
@@ -102,11 +107,11 @@ class ReservationControllerIntegrationTest {
 
         webTestClient
             .post()
-            .uri("http://localhost:" + port + "/api/reservation")
+            .uri("http://localhost:" + port + "/api/reservations")
             .body(Mono.just(payload), ReservationPayload.class)
             .exchange()
             .expectStatus().isOk()
-            .expectBody(String.class)
-                .isEqualTo(siteAtFullCapacityMessage);
+            .expectBody()
+                .jsonPath("$.message").isEqualTo(messageSource.getMessage("campsite.exception.reservation.at.full.capacity", null, null, Locale.getDefault()));
     }
 }
