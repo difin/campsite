@@ -97,7 +97,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (DAYS.between(requestDates.getArrivalAsDate(), requestDates.getDepartureAsDate()) > availableDaysCount){
 
             throw new VolcanicGetawaysException(
-                    messageSource.getMessage("volcanic_getaways.exception.reservation.at.full.capacity", null, null, Locale.getDefault())
+                    messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault())
             );
         }
     }

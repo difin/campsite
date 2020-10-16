@@ -116,7 +116,7 @@ class ReservationServiceImplTest {
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
-        when(messageSource.getMessage("volcanic_getaways.exception.reservation.at.full.capacity", null, null, Locale.getDefault()))
+        when(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault()))
                 .thenReturn("some message");
 
         Assertions.assertThrows(VolcanicGetawaysException.class, () ->

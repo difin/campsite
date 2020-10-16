@@ -102,10 +102,9 @@ class ReservationControllerIntegrationConcurrentTest {
                         Map<String, String> map = parse(t.getResponseBody());
                         assertTrue(
                     (map.containsKey("message") &&
-                                map.get("message").equals(messageSource.getMessage("volcanic_getaways.exception.reservation.at.full.capacity", null, null, Locale.getDefault())))
+                                map.get("message").equals(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault())))
                             ||
-                            (map.containsKey("bookingReference")
-                                    && map.get("bookingReference").length() == 36));
+                            (map.containsKey("bookingReference") && map.get("bookingReference").length() == 36));
                     });
                 } );
 

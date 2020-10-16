@@ -109,6 +109,6 @@ class ReservationControllerIntegrationTest {
             .exchange()
             .expectStatus().isOk()
             .expectBody()
-                .jsonPath("$.message").isEqualTo(messageSource.getMessage("volcanic_getaways.exception.reservation.at.full.capacity", null, null, Locale.getDefault()));
+                .jsonPath("$.message").isEqualTo(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault()));
     }
 }
