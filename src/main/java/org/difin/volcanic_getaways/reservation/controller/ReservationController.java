@@ -37,9 +37,9 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Mono<BookingReference> reserve(@Valid @RequestBody ReservationPayload payload) {
+	public Mono<BookingReference> makeReservation(@Valid @RequestBody ReservationPayload payload) {
 
-		return reservationFacade.reserve(payload);
+		return reservationFacade.makeReservation(payload);
 	}
 
 	@DeleteMapping(

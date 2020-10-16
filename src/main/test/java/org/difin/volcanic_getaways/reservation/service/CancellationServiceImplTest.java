@@ -43,7 +43,7 @@ class CancellationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(reservation);
 
-        CancellationStatus actual = cancellationService.cancelReservationInExistingTx(payload);
+        CancellationStatus actual = cancellationService.cancelReservationBlocking(payload);
 
         assertEquals(CancellationStatus.SUCCESS, actual);
     }
@@ -56,7 +56,7 @@ class CancellationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(null);
 
-        CancellationStatus actual = cancellationService.cancelReservationInExistingTx(payload);
+        CancellationStatus actual = cancellationService.cancelReservationBlocking(payload);
 
         assertEquals(CancellationStatus.NOT_FOUND, actual);
     }

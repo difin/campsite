@@ -33,17 +33,17 @@ public class UpdateServiceImpl implements UpdateService {
         this.reservationService = reservationService;
     }
 
-    public Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
+    public Mono<ActionResult> updateReservationReactive(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
         return reactiveExecutionService.execTransaction(() ->
-                updateReservationInExistingTx(bookingReferencePayload, payload))
+                updateReservationBlocking(bookingReferencePayload, payload))
                 .map(modelConverter::updateStatusToDTO);
     }
 
-    @Transactional(Transactional.TxType.MANDATORY)
-    public UpdateStatus updateReservationInExistingTx(BookingReferencePayload bookingReferencePayload,
-                                                      ReservationPayload payload) {
+    @Transactional(Transactional.TxType.REQUIRED)
+    public UpdateStatus updateReservationBlocking(BookingReferencePayload bookingReferencePayload,
+                                                  ReservationPayload payload) {
 
-        CancellationStatus cancellationStatus = cancellationService.cancelReservationInExistingTx(bookingReferencePayload);
+        CancellationStatus cancellationStatus = cancellationService.cancelReservationBlocking(bookingReferencePayload);
         UpdateStatus updateStatus = null;
 
         switch (cancellationStatus) {
@@ -51,7 +51,7 @@ public class UpdateServiceImpl implements UpdateService {
                 updateStatus = UpdateStatus.NOT_FOUND;
                 break;
             case SUCCESS:
-                reservationService.reserveInExistingTx(payload, Optional.of(bookingReferencePayload.getBookingReference()));
+                reservationService.makeReservationBlocking(payload, Optional.of(bookingReferencePayload.getBookingReference()));
                 updateStatus = UpdateStatus.SUCCESS;
                 break;
         }

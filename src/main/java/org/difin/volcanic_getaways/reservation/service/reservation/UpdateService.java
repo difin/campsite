@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 
 public interface UpdateService {
 
-    Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload);
-    UpdateStatus updateReservationInExistingTx(BookingReferencePayload bookingReferencePayload, ReservationPayload payload);
+    Mono<ActionResult> updateReservationReactive(BookingReferencePayload bookingReferencePayload, ReservationPayload payload);
+    UpdateStatus updateReservationBlocking(BookingReferencePayload bookingReferencePayload, ReservationPayload payload);
 }

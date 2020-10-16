@@ -49,15 +49,15 @@ public class ReservationServiceImpl implements ReservationService {
         this.methodParamValidator = methodParamValidator;
     }
 
-    public Mono<BookingReference> reserve(ReservationPayload payload) {
+    public Mono<BookingReference> makeReservationReactive(ReservationPayload payload) {
 
         return reactiveExecutionService.execTransaction(() ->
-                reserveInExistingTx(payload, Optional.empty()))
+                makeReservationBlocking(payload, Optional.empty()))
                 .map(modelConverter::reservationEntityToBookingReferenceDTO);
     }
 
-    @Transactional(Transactional.TxType.MANDATORY)
-    public Reservation reserveInExistingTx(ReservationPayload payload, Optional<String> bookingRef){
+    @Transactional(Transactional.TxType.REQUIRED)
+    public Reservation makeReservationBlocking(ReservationPayload payload, Optional<String> bookingRef){
 
         managedDatesFacade.lockDates(payload.getBookingDates());
 
@@ -90,7 +90,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    public Flux<ReservationModel> getReservations(Optional<RequestDates> requestDates) {
+    public Flux<ReservationModel> getReservationsReactive(Optional<RequestDates> requestDates) {
 
         return reactiveExecutionService.exec(() ->
                 getReservationsBlocking(requestDates))

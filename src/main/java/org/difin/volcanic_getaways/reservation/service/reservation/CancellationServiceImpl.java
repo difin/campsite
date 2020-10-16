@@ -37,14 +37,14 @@ public class CancellationServiceImpl implements CancellationService {
         this.reactiveExecutionService = reactiveExecutionService;
     }
 
-    public Mono<ActionResult> cancelReservation(BookingReferencePayload bookingReferencePayload) {
+    public Mono<ActionResult> cancelReservationReactive(BookingReferencePayload bookingReferencePayload) {
         return reactiveExecutionService.execTransaction(() ->
-                cancelReservationInExistingTx(bookingReferencePayload))
+                cancelReservationBlocking(bookingReferencePayload))
                 .map(modelConverter::cancellationStatusToDTO);
     }
 
-    @Transactional(Transactional.TxType.MANDATORY)
-    public CancellationStatus cancelReservationInExistingTx(BookingReferencePayload bookingReferencePayload) {
+    @Transactional(Transactional.TxType.REQUIRED)
+    public CancellationStatus cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
         AtomicReference<CancellationStatus> cancellationStatus = new AtomicReference<>();
 
@@ -74,7 +74,7 @@ public class CancellationServiceImpl implements CancellationService {
         List<Reservation> reservations = reservationRepository.findAll();
         reservations.forEach(t -> {
             CancellationStatus cancellationStatus =
-                    cancelReservationInExistingTx(new BookingReferencePayload(t.getBookingRef()));
+                    cancelReservationBlocking(new BookingReferencePayload(t.getBookingRef()));
 
             if (cancellationStatus != CancellationStatus.SUCCESS){
                 throw new VolcanicGetawaysException("Failed deleting all reservations");
