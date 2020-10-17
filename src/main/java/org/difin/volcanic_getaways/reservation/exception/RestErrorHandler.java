@@ -1,6 +1,8 @@
 package org.difin.volcanic_getaways.reservation.exception;
 
 import org.difin.volcanic_getaways.reservation.model.response.ErrorModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class RestErrorHandler extends ResponseEntityExceptionHandler  {
+
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(value = {ReservationNotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(ReservationNotFoundException e, WebRequest request) {
@@ -82,6 +86,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler  {
 
     @ExceptionHandler(value = {RuntimeException.class})
     protected ResponseEntity<Object> handleOtherExceptions(RuntimeException e, WebRequest request) {
+
+        LOGGER.error("Unhandled error: ", e);
 
         ErrorModel errorModel = new ErrorModel(e);
 

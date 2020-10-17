@@ -6,6 +6,8 @@ import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.response.AvailableDateModel;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
     private ManagedDateRepository managedDateRepository;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private int spotsNum;
 
@@ -54,14 +58,22 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
 
     public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDatesOptional) {
 
+        LOGGER.debug("getAvailableDatesBlocking - enter; for range=" + requestDatesOptional.map(
+                t -> { return t.getArrival() + "," + t.getDeparture(); }));
+
         RequestDates requestDates = requestDatesOptional.orElse(
                 new RequestDates(
                         LocalDate.now().plusDays(1),
                         LocalDate.now().plusMonths(1))
         );
 
-        return managedDateRepository.getAvailableDates(spotsNum,
+        List<ManagedDate> result =
+            managedDateRepository.getAvailableDates(spotsNum,
                 requestDates.getArrival(),
                 requestDates.getDeparture().minusDays(1));
+
+        LOGGER.debug("getAvailableDatesBlocking - exit; found " + result.size() + " available dates");
+
+        return result;
     }
 }

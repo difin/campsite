@@ -6,6 +6,8 @@ import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepos
 import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,15 @@ public class CancellationServiceImpl implements CancellationService {
     private ReservationRepository reservationRepository;
     private ReservedDateRepository reservedDateRepository;
     private ReactiveExecutionService reactiveExecutionService;
-    MessageSource messageSource;
+    private MessageSource messageSource;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public CancellationServiceImpl(ReservationRepository reservationRepository,
-                                  ReservedDateRepository reservedDateRepository,
-                                  ReactiveExecutionService reactiveExecutionService,
-                                  MessageSource messageSource){
+                                   ReservedDateRepository reservedDateRepository,
+                                   ReactiveExecutionService reactiveExecutionService,
+                                   MessageSource messageSource){
         this.reservationRepository = reservationRepository;
         this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
@@ -44,6 +48,8 @@ public class CancellationServiceImpl implements CancellationService {
     @Transactional(Transactional.TxType.REQUIRED)
     public boolean cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
+        LOGGER.debug("cancelReservationBlocking - enter; booking reference=[" + bookingReferencePayload.getBookingReference() + "]");
+
         Optional<Reservation> reservation =
                 Optional.ofNullable(reservationRepository
                         .findByBookingRef(bookingReferencePayload.getBookingReference()));
@@ -57,11 +63,16 @@ public class CancellationServiceImpl implements CancellationService {
                             reservationRepository.deleteById(r.getId());
                         },
                         () -> {
+
+                            LOGGER.debug("cancelReservationBlocking: reservation not found by booking reference");
+
                             throw new ReservationNotFoundException(
                                     messageSource.getMessage("volcanic_getaways.exception.reservation.not.found",
                                             null, null, Locale.getDefault()));
                         }
                 );
+
+        LOGGER.debug("cancelReservationBlocking - exit; completed successfully");
 
         return true;
     }

@@ -9,7 +9,7 @@ spring:
     name: volcanic_getaways
 
   datasource:
-    url: jdbc:h2:file:~/h2/volcanic_getaways
+    url: jdbc:h2:file:~/volcanic_getaways/h2
     driver-class-name: org.h2.Driver
     username: sa
     password: password
@@ -36,9 +36,15 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:liquibase/liquibase-changeLog.xml
-    url: jdbc:h2:file:~/h2/volcanic_getaways
+    url: jdbc:h2:file:~/volcanic_getaways/h2
     user: sa
     password: password
+
+logging:
+  level:
+    org.difin.volcanic_getaways.reservation: DEBUG
+  file:
+    name: application.log
 
 app:
   spots-num: 3

@@ -5,7 +5,6 @@ import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.model.response.BookingReferenceModel;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationService;
-import org.difin.volcanic_getaways.reservation.utils.JsonDeserializer;
 import org.difin.volcanic_getaways.reservation.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -32,7 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestPropertySource(
         properties = {
-                "spring.datasource.url=jdbc:h2:file:~/h2/volcanic_getaways_test",
+                "spring.datasource.url=jdbc:h2:file:~/volcanic_getaways/h2_test",
+                "spring.liquibase.url=jdbc:h2:file:~/volcanic_getaways/h2_test",
                 "app.spots-num=10"
         }
 )
@@ -82,7 +81,7 @@ class ReservationControllerIntegrationConcurrentTest {
                     .expectStatus().value(oneOf(HttpStatus.OK.value(), HttpStatus.CONFLICT.value()))
                     .expectBody(String.class)
                     .consumeWith(t -> {
-                        Map<String, String> map = JsonDeserializer.jsonToMap(t.getResponseBody());
+                        Map<String, String> map = testUtils.jsonToMap(t.getResponseBody());
                         assertTrue(((map.containsKey("bookingReference") && map.get("bookingReference").length() == 36) ||
                                    (map.containsKey("errors"))));
                     });

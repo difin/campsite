@@ -22,7 +22,8 @@ import static org.hamcrest.Matchers.hasLength;
 
 @TestPropertySource(
         properties = {
-                "spring.datasource.url=jdbc:h2:file:~/h2/volcanic_getaways_test"
+                "spring.datasource.url=jdbc:h2:file:~/volcanic_getaways/h2_test",
+                "spring.liquibase.url=jdbc:h2:file:~/volcanic_getaways/h2_test",
         }
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

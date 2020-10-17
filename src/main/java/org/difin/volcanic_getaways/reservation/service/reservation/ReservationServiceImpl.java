@@ -13,6 +13,8 @@ import org.difin.volcanic_getaways.reservation.model.response.BookingReferenceMo
 import org.difin.volcanic_getaways.reservation.model.response.ReservationModel;
 import org.difin.volcanic_getaways.reservation.service.ManagedDatesFacade;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,9 @@ public class ReservationServiceImpl implements ReservationService {
     private ManagedDatesFacade managedDatesFacade;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
-    MessageSource messageSource;
+    private MessageSource messageSource;
+
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
@@ -63,11 +67,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional(Transactional.TxType.REQUIRED)
     public Reservation makeReservationBlocking(ReservationPayload payload, Optional<String> bookingRef){
 
+        LOGGER.debug("makeReservationBlocking - enter; payload: [name=" + payload.getName() + ", email=" + payload.getEmail() +
+                ", arrival=" + payload.getBookingDates().getArrival() + ", departure=" + payload.getBookingDates().getDeparture() + "]" +
+                "; bookingRef=" + bookingRef + "]");
+
         managedDatesFacade.lockDates(payload.getBookingDates());
 
         List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(Optional.of(payload.getBookingDates()));
 
         if (DAYS.between(payload.getBookingDates().getArrival(), payload.getBookingDates().getDeparture()) > availableDates.size()){
+
+            LOGGER.debug("makeReservationBlocking: failed to make reservation, site is at full capacity");
 
             throw new RequestedRangeIsBookedException(
                     messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity",
@@ -97,6 +107,8 @@ public class ReservationServiceImpl implements ReservationService {
                         }
                 );
 
+        LOGGER.debug("makeReservationBlocking - exit; result=" + reservation.getBookingRef());
+
         return reservation;
     }
 
@@ -110,12 +122,19 @@ public class ReservationServiceImpl implements ReservationService {
 
     public List<Reservation> getReservationsBlocking(Optional<RequestDates> requestDatesOptional) {
 
+        LOGGER.debug("getReservationsBlocking - enter; dates range=" +
+                requestDatesOptional.map(t -> t.getArrival() + ", " + t.getDeparture()));
+
         RequestDates requestDates = requestDatesOptional.orElse(
                 new RequestDates(
                         LocalDate.now().plusDays(1),
                         LocalDate.now().plusMonths(1)));
 
-        return reservationRepository
+        List<Reservation> reservations = reservationRepository
                 .findReservationsForDates(requestDates.getArrival(), requestDates.getDeparture());
+
+        LOGGER.debug("getReservationsBlocking - exit; found " + reservations.size() + " reservations");
+
+        return reservations;
     }
 }
