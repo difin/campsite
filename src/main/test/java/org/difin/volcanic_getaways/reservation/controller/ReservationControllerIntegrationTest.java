@@ -15,7 +15,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Locale;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.equalTo;

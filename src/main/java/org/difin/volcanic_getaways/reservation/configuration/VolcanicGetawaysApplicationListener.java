@@ -1,4 +1,4 @@
-package org.difin.volcanic_getaways.reservation;
+package org.difin.volcanic_getaways.reservation.configuration;
 
 import org.difin.volcanic_getaways.reservation.service.ManagedDatesFacade;
 import org.springframework.beans.factory.annotation.Autowired;

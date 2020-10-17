@@ -79,9 +79,8 @@ class ReservationControllerIntegrationConcurrentTest {
         String email = faker.name().firstName() + faker.name().lastName() + "@somewhere.com";
 
         BookingDates bookingDates = bookingDatesList.get(random.ints(0,2).findFirst().getAsInt());
-        ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        return payload;
+        return ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
     }
 
     @DisplayName("When trying to reserve the same range of dates concurrently then only #spotsOnSite reservations succeeds and others fail site at full capacity message")

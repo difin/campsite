@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 public class ReservationModel {
 
-    private int id;
     private String name;
     private String email;
     private String bookingRef;

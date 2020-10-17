@@ -23,7 +23,6 @@ public class ModelConverter {
     public ReservationModel reservationEntityToReservationDTO(Reservation reservation) {
 
         return ReservationModel.builder()
-                .id(reservation.getId())
                 .name(reservation.getName())
                 .email(reservation.getEmail())
                 .bookingRef(reservation.getBookingRef())

@@ -1,4 +1,4 @@
-package org.difin.volcanic_getaways.reservation;
+package org.difin.volcanic_getaways.reservation.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
