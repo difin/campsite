@@ -32,9 +32,9 @@ public class ManagedDatesController {
 			params = {"arrival" , "departure"},
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<AvailableDateModel> getAvailableDates(@RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+	public Flux<AvailableDateModel> getAvailableDates(@RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
 													  LocalDate arrival,
-													  @RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+													  @RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
 													  LocalDate departure) {
 
 		return managedDatesFacade

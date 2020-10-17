@@ -3,18 +3,18 @@ package org.difin.volcanic_getaways.reservation.service.reservation;
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
-import org.difin.volcanic_getaways.reservation.exception.VolcanicGetawaysException;
-import org.difin.volcanic_getaways.reservation.model.ModelConverter;
+import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
-import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,27 +24,27 @@ public class CancellationServiceImpl implements CancellationService {
     private ReservationRepository reservationRepository;
     private ReservedDateRepository reservedDateRepository;
     private ReactiveExecutionService reactiveExecutionService;
-    private ModelConverter modelConverter;
+    MessageSource messageSource;
 
     @Autowired
     public CancellationServiceImpl(ReservationRepository reservationRepository,
                                   ReservedDateRepository reservedDateRepository,
                                   ReactiveExecutionService reactiveExecutionService,
-                                  ModelConverter modelConverter){
+                                  MessageSource messageSource){
         this.reservationRepository = reservationRepository;
-        this.modelConverter = modelConverter;
         this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
+        this.messageSource = messageSource;
     }
 
-    public Mono<ActionResult> cancelReservationReactive(BookingReferencePayload bookingReferencePayload) {
+    public Mono<Void> cancelReservationReactive(BookingReferencePayload bookingReferencePayload) {
         return reactiveExecutionService.execTransaction(() ->
                 cancelReservationBlocking(bookingReferencePayload))
-                .map(modelConverter::cancellationStatusToDTO);
+                .then();
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public CancellationStatus cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
+    public boolean cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
         AtomicReference<CancellationStatus> cancellationStatus = new AtomicReference<>();
 
@@ -62,24 +62,21 @@ public class CancellationServiceImpl implements CancellationService {
 
                             cancellationStatus.set(CancellationStatus.SUCCESS);
                         },
-                        () -> cancellationStatus.set(CancellationStatus.NOT_FOUND)
+                        () -> {
+                            throw new ReservationNotFoundException(
+                                    messageSource.getMessage("volcanic_getaways.exception.reservation.not.found",
+                                            null, null, Locale.getDefault()));
+                        }
                 );
 
-        return cancellationStatus.get();
+        return true;
     }
 
     @Transactional
     public void deleteAllReservations() {
 
         List<Reservation> reservations = reservationRepository.findAll();
-        reservations.forEach(t -> {
-            CancellationStatus cancellationStatus =
-                    cancelReservationBlocking(new BookingReferencePayload(t.getBookingRef()));
-
-            if (cancellationStatus != CancellationStatus.SUCCESS){
-                throw new VolcanicGetawaysException("Failed deleting all reservations");
-            }
-        });
+        reservations.forEach(t -> cancelReservationBlocking(new BookingReferencePayload(t.getBookingRef())));
     }
 
 }

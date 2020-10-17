@@ -14,6 +14,6 @@ public class AvailableDateModel {
 
     @Getter
     @Setter
-    @JsonFormat(pattern="uuuu-MMM-dd")
+    @JsonFormat(pattern="uuuu-MMMM-dd")
     private LocalDate availableDate;
 }

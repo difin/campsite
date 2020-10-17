@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.Locale;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasLength;
 
 @TestPropertySource(
@@ -48,8 +50,8 @@ class ReservationControllerIntegrationTest {
         cancellationService.deleteAllReservations();
     }
 
-    private final String arrival = "2020-Nov-01";
-    private final String departure = "2020-Nov-04";
+    private final String arrival = "2020-November-01";
+    private final String departure = "2020-November-04";
     private final String name = "some name";
     private final String email = "someone@somewhere.com";
 
@@ -107,8 +109,8 @@ class ReservationControllerIntegrationTest {
             .uri("http://localhost:" + port + "/api/reservations")
             .body(Mono.just(payload), ReservationPayload.class)
             .exchange()
-            .expectStatus().isOk()
+            .expectStatus().value(equalTo(HttpStatus.CONFLICT.value()))
             .expectBody()
-                .jsonPath("$.message").isEqualTo(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault()));
+                .jsonPath("$.errors").exists();
     }
 }

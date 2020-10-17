@@ -5,12 +5,11 @@ import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.entity.ReservedDate;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
-import org.difin.volcanic_getaways.reservation.exception.VolcanicGetawaysException;
+import org.difin.volcanic_getaways.reservation.exception.RequestedRangeIsBookedException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationServiceImpl;
 import org.assertj.core.util.Lists;
-import org.difin.volcanic_getaways.reservation.validation.MethodParamValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 class ReservationServiceImplTest {
 
     @Mock
@@ -45,13 +43,13 @@ class ReservationServiceImplTest {
     private ManagedDatesFacade managedDatesFacade;
 
     @Mock
-    private MethodParamValidator methodParamValidator;
+    private MessageSource messageSource;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
 
-    private final String arrival = "2020-Nov-01";
-    private final String departure = "2020-Nov-04";
+    private final String arrival = "2020-November-01";
+    private final String departure = "2020-November-04";
     private final String name = "some name";
     private final String email = "some email";
     private final String bookingRef = "some booking reference";
@@ -99,9 +97,8 @@ class ReservationServiceImplTest {
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
-        doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 0);
 
-        Assertions.assertThrows(VolcanicGetawaysException.class, () ->
+        Assertions.assertThrows(RequestedRangeIsBookedException.class, () ->
                 reservationService.makeReservationBlocking(payload, Optional.of(bookingRef)));
     }
 
@@ -116,9 +113,8 @@ class ReservationServiceImplTest {
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
         when(managedDatesFacade.getAvailableDatesBlocking(Optional.of(bookingDates))).thenReturn(availableDates);
-        doThrow(new VolcanicGetawaysException("")).when(methodParamValidator).validateSiteAvailability(bookingDates, 2);
 
-        Assertions.assertThrows(VolcanicGetawaysException.class, () ->
+        Assertions.assertThrows(RequestedRangeIsBookedException.class, () ->
                 reservationService.makeReservationBlocking(payload, Optional.of(bookingRef)));
     }
 }

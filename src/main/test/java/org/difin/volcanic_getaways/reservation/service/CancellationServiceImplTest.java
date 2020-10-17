@@ -2,8 +2,8 @@ package org.difin.volcanic_getaways.reservation.service;
 
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
+import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
-import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationServiceImpl;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
@@ -12,25 +12,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 class CancellationServiceImplTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private MessageSource messageSource;
+
     @InjectMocks
     private CancellationServiceImpl cancellationService;
 
-    private int id = 1;
-    private String name = "some name";
-    private String email = "some email";
-    private String bookingRef = "some booking reference";
+    private final int id = 1;
+    private final String name = "some name";
+    private final String email = "some email";
+    private final String bookingRef = "some booking reference";
 
     @DisplayName("When cancelling existing reservation then it gets cancelled successfully")
     @Test
@@ -43,12 +45,12 @@ class CancellationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(reservation);
 
-        CancellationStatus actual = cancellationService.cancelReservationBlocking(payload);
+        boolean actual = cancellationService.cancelReservationBlocking(payload);
 
-        assertEquals(CancellationStatus.SUCCESS, actual);
+        assertTrue(actual);
     }
 
-    @DisplayName("When attempting to cancel a reservation that doesn't exist and error status is returned")
+    @DisplayName("When attempting to cancel a reservation that doesn't exist then exception is thrown")
     @Test
     void attemptingToCancelNotExistentReservationTest(){
 
@@ -56,8 +58,6 @@ class CancellationServiceImplTest {
 
         when(reservationRepository.findByBookingRef(bookingRef)).thenReturn(null);
 
-        CancellationStatus actual = cancellationService.cancelReservationBlocking(payload);
-
-        assertEquals(CancellationStatus.NOT_FOUND, actual);
+        assertThrows(ReservationNotFoundException.class, () -> cancellationService.cancelReservationBlocking(payload));
     }
 }

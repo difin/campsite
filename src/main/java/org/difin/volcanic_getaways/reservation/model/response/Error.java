@@ -7,9 +7,13 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingReference {
+@Getter
+@Setter
+public class Error {
 
-    @Getter
-    @Setter
-    private String bookingReference;
+    public Error(Exception e){
+        error = e.getMessage();
+    }
+
+    private String error;
 }

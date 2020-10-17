@@ -3,8 +3,7 @@ package org.difin.volcanic_getaways.reservation.service;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
-import org.difin.volcanic_getaways.reservation.model.response.BookingReference;
+import org.difin.volcanic_getaways.reservation.model.response.BookingReferenceModel;
 import org.difin.volcanic_getaways.reservation.model.response.ReservationModel;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationService;
@@ -32,15 +31,15 @@ public class ReservationFacadeImpl implements ReservationFacade {
         this.updateService = updateService;
     }
 
-    public Mono<BookingReference> makeReservation(ReservationPayload payload) {
+    public Mono<BookingReferenceModel> makeReservation(ReservationPayload payload) {
         return reservationService.makeReservationReactive(payload);
     }
 
-    public Mono<ActionResult> cancelReservation(BookingReferencePayload bookingReferencePayload) {
+    public Mono<Void> cancelReservation(BookingReferencePayload bookingReferencePayload) {
         return cancellationService.cancelReservationReactive(bookingReferencePayload);
     }
 
-    public Mono<ActionResult> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
+    public Mono<Void> updateReservation(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
         return updateService.updateReservationReactive(bookingReferencePayload, payload);
     }
 

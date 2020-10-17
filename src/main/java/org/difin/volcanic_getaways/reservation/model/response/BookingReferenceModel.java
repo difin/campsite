@@ -5,11 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class ActionResult {
+@NoArgsConstructor
+public class BookingReferenceModel {
 
-    private String status;
+    @Getter
+    @Setter
+    private String bookingReference;
 }

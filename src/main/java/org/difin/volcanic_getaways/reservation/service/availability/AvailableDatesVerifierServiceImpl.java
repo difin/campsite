@@ -46,8 +46,8 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
     public List<ManagedDate> lockDates(RequestDates requestDates) {
 
         return managedDateRepository.lockDates(
-                requestDates.getArrivalAsDate(),
-                requestDates.getDepartureAsDate().minusDays(1));
+                requestDates.getArrival(),
+                requestDates.getDeparture().minusDays(1));
     }
 
     public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDatesOptional) {
@@ -59,7 +59,7 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
         );
 
         return managedDateRepository.getAvailableDates(spotsNum,
-                requestDates.getArrivalAsDate(),
-                requestDates.getDepartureAsDate().minusDays(1));
+                requestDates.getArrival(),
+                requestDates.getDeparture().minusDays(1));
     }
 }

@@ -18,6 +18,6 @@ public class ReservationModel {
     private String email;
     private String bookingRef;
 
-    @JsonFormat(pattern="uuuu-MMM-dd")
+    @JsonFormat(pattern="uuuu-MMMM-dd")
     private List<LocalDate> reservedDates;
 }

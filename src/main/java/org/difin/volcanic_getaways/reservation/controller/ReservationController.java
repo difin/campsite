@@ -3,8 +3,7 @@ package org.difin.volcanic_getaways.reservation.controller;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
-import org.difin.volcanic_getaways.reservation.model.response.BookingReference;
+import org.difin.volcanic_getaways.reservation.model.response.BookingReferenceModel;
 import org.difin.volcanic_getaways.reservation.model.response.ReservationModel;
 import org.difin.volcanic_getaways.reservation.service.ReservationFacade;
 import org.difin.volcanic_getaways.reservation.validation.MethodParamValidator;
@@ -37,7 +36,7 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Mono<BookingReference> makeReservation(@Valid @RequestBody ReservationPayload payload) {
+	public Mono<BookingReferenceModel> makeReservation(@Valid @RequestBody ReservationPayload payload) {
 
 		return reservationFacade.makeReservation(payload);
 	}
@@ -47,7 +46,7 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Mono<ActionResult> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
+	public Mono<Void> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
 
 		return reservationFacade.cancelReservation(
 				methodParamValidator.validateBookingReference(bookingReference));
@@ -58,7 +57,7 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Mono<ActionResult> updateReservation(@PathVariable BookingReferencePayload bookingReference,
+	public Mono<Void> updateReservation(@PathVariable BookingReferencePayload bookingReference,
 												@Valid @RequestBody ReservationPayload payload) {
 
 		return reservationFacade.updateReservation(
@@ -69,9 +68,9 @@ public class ReservationController {
 			params = {"arrival" , "departure"},
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Flux<ReservationModel> getReservations(@RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+	public Flux<ReservationModel> getReservations(@RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
 												  LocalDate arrival,
-												  @RequestParam @DateTimeFormat(pattern = "uuuu-MMM-dd")
+												  @RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
 												  LocalDate departure) {
 		return reservationFacade
 				.getReservations(

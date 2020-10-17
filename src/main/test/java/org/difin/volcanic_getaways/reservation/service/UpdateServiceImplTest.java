@@ -1,35 +1,25 @@
 package org.difin.volcanic_getaways.reservation.service;
 
-import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
-import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
+import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
-import org.difin.volcanic_getaways.reservation.model.internal.UpdateStatus;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
 import org.difin.volcanic_getaways.reservation.service.reservation.ReservationService;
 import org.difin.volcanic_getaways.reservation.service.reservation.UpdateServiceImpl;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 class UpdateServiceImplTest {
 
     @Mock
@@ -47,61 +37,34 @@ class UpdateServiceImplTest {
     @InjectMocks
     private UpdateServiceImpl updateService;
 
-    private int reservationId = 1;
-    private String name = "some name";
-    private String email = "some email";
-    private String bookingRef = "some booking reference";
+    private final int reservationId = 1;
+    private final String name = "some name";
+    private final String email = "some email";
+    private final String bookingRef = "some booking reference";
 
-    private final ManagedDate nov01 = ManagedDate.builder().id(1).date( LocalDate.of(2020, 11, 1)).reservedDates(Lists.emptyList()).build();
-    private final ManagedDate nov02 = ManagedDate.builder().id(2).date( LocalDate.of(2020, 11, 2)).reservedDates(Lists.emptyList()).build();
-    private final ManagedDate nov03 = ManagedDate.builder().id(3).date( LocalDate.of(2020, 11, 3)).reservedDates(Lists.emptyList()).build();
+    private final String arrival = "2020-November-01";
+    private final String departure = "2020-November-04";
 
-    List<ManagedDate> availableDates = new ArrayList<>();
-
-    private final String arrival = "2020-Nov-01";
-    private final String departure = "2020-Nov-04";
-
-    private BookingDates bookingDates = new BookingDates(arrival, departure);
+    private final BookingDates bookingDates = new BookingDates(arrival, departure);
+    private final ReservationPayload reservationPayload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
+    private final BookingReferencePayload bookingReferencePayload = new BookingReferencePayload(bookingRef);
 
     @DisplayName("When updating existing reservation then it gets updated successfully")
     @Test
     void updatingExistingReservationTest(){
 
-        availableDates.add(nov01);
-        availableDates.add(nov02);
-        availableDates.add(nov03);
+        when(cancellationService.cancelReservationBlocking(bookingReferencePayload)).thenReturn(true);
 
-        ReservationPayload reservationPayload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
-        BookingReferencePayload bookingReferencePayload = new BookingReferencePayload(bookingRef);
-
-        Reservation reservation = Reservation.builder()
-                .id(reservationId).name(name).email(email).bookingRef(bookingRef).reservedDates(Lists.emptyList()).build();
-
-        when(cancellationService.cancelReservationBlocking(bookingReferencePayload)).thenReturn(CancellationStatus.SUCCESS);
-
-        UpdateStatus actual = updateService.updateReservationBlocking(bookingReferencePayload, reservationPayload);
-
-        assertEquals(UpdateStatus.SUCCESS, actual);
+        assertTrue(updateService.updateReservationBlocking(bookingReferencePayload, reservationPayload));
     }
 
-    @DisplayName("When trying to update existing reservation, but it is not found then getting status not found")
+    @DisplayName("When trying to update existing reservation, but it is not found then ReservationNotFoundException is thrown")
     @Test
     void attemptingToUpdateNotExistentReservationTest(){
 
-        availableDates.add(nov01);
-        availableDates.add(nov02);
-        availableDates.add(nov03);
+        when(cancellationService.cancelReservationBlocking(bookingReferencePayload)).thenThrow(ReservationNotFoundException.class);
 
-        ReservationPayload reservationPayload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
-        BookingReferencePayload bookingReferencePayload = new BookingReferencePayload(bookingRef);
-
-        Reservation reservation = Reservation.builder()
-                .id(reservationId).name(name).email(email).bookingRef(bookingRef).reservedDates(Lists.emptyList()).build();
-
-        when(cancellationService.cancelReservationBlocking(bookingReferencePayload)).thenReturn(CancellationStatus.NOT_FOUND);
-
-        UpdateStatus actual = updateService.updateReservationBlocking(bookingReferencePayload, reservationPayload);
-
-        assertEquals(UpdateStatus.NOT_FOUND, actual);
+        assertThrows(ReservationNotFoundException.class,
+                () -> updateService.updateReservationBlocking(bookingReferencePayload, reservationPayload));
     }
 }

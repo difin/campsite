@@ -3,9 +3,6 @@ package org.difin.volcanic_getaways.reservation.service.reservation;
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
-import org.difin.volcanic_getaways.reservation.model.internal.UpdateStatus;
-import org.difin.volcanic_getaways.reservation.model.response.ActionResult;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,29 +30,23 @@ public class UpdateServiceImpl implements UpdateService {
         this.reservationService = reservationService;
     }
 
-    public Mono<ActionResult> updateReservationReactive(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
+    public Mono<Void> updateReservationReactive(BookingReferencePayload bookingReferencePayload, ReservationPayload payload) {
         return reactiveExecutionService.execTransaction(() ->
                 updateReservationBlocking(bookingReferencePayload, payload))
-                .map(modelConverter::updateStatusToDTO);
+                .then();
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public UpdateStatus updateReservationBlocking(BookingReferencePayload bookingReferencePayload,
-                                                  ReservationPayload payload) {
+    public boolean updateReservationBlocking(BookingReferencePayload bookingReferencePayload,
+                                             ReservationPayload payload) {
 
-        CancellationStatus cancellationStatus = cancellationService.cancelReservationBlocking(bookingReferencePayload);
-        UpdateStatus updateStatus = null;
+        if (cancellationService.cancelReservationBlocking(bookingReferencePayload)){
 
-        switch (cancellationStatus) {
-            case NOT_FOUND:
-                updateStatus = UpdateStatus.NOT_FOUND;
-                break;
-            case SUCCESS:
-                reservationService.makeReservationBlocking(payload, Optional.of(bookingReferencePayload.getBookingReference()));
-                updateStatus = UpdateStatus.SUCCESS;
-                break;
+            reservationService.makeReservationBlocking(payload, Optional.of(bookingReferencePayload.getBookingReference()));
+
+            return true;
         }
-
-        return updateStatus;
+        else
+            return false;
     }
 }

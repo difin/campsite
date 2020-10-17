@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,9 +67,9 @@ class ReservationControllerIntegrationConcurrentTest {
     }
 
     // please note that departure is not included : [arrival, departure)
-    private final BookingDates bookingDates1 = new BookingDates("2020-Nov-02", "2020-Nov-05");
-    private final BookingDates bookingDates2 = new BookingDates("2020-Nov-03", "2020-Nov-06");
-    private final BookingDates bookingDates3 = new BookingDates("2020-Nov-04", "2020-Nov-07");
+    private final BookingDates bookingDates1 = new BookingDates("2020-November-02", "2020-November-05");
+    private final BookingDates bookingDates2 = new BookingDates("2020-November-03", "2020-November-06");
+    private final BookingDates bookingDates3 = new BookingDates("2020-November-04", "2020-November-07");
 
     private final List<BookingDates> bookingDatesList = Arrays.asList(bookingDates1, bookingDates2, bookingDates3);
 
@@ -96,15 +98,12 @@ class ReservationControllerIntegrationConcurrentTest {
                     .uri("http://localhost:" + port + "/api/reservations")
                     .body(Mono.just(generateReservationPayload()), ReservationPayload.class)
                     .exchange()
-                    .expectStatus().isOk()
+                    .expectStatus().value(oneOf(HttpStatus.OK.value(), HttpStatus.CONFLICT.value()))
                     .expectBody(String.class)
                     .consumeWith(t -> {
                         Map<String, String> map = parse(t.getResponseBody());
-                        assertTrue(
-                    (map.containsKey("message") &&
-                                map.get("message").equals(messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault())))
-                            ||
-                            (map.containsKey("bookingReference") && map.get("bookingReference").length() == 36));
+                        assertTrue(((map.containsKey("bookingReference") && map.get("bookingReference").length() == 36) ||
+                                   (map.containsKey("errors"))));
                     });
                 } );
 
