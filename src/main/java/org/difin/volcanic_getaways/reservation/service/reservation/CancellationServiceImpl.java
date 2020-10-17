@@ -5,7 +5,6 @@ import org.difin.volcanic_getaways.reservation.data.repository.ReservationReposi
 import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
 import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
-import org.difin.volcanic_getaways.reservation.model.internal.CancellationStatus;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -16,7 +15,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class CancellationServiceImpl implements CancellationService {
@@ -46,8 +44,6 @@ public class CancellationServiceImpl implements CancellationService {
     @Transactional(Transactional.TxType.REQUIRED)
     public boolean cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
-        AtomicReference<CancellationStatus> cancellationStatus = new AtomicReference<>();
-
         Optional<Reservation> reservation =
                 Optional.ofNullable(reservationRepository
                         .findByBookingRef(bookingReferencePayload.getBookingReference()));
@@ -59,8 +55,6 @@ public class CancellationServiceImpl implements CancellationService {
                                     .forEach(t -> reservedDateRepository.deleteById(t.getId()));
 
                             reservationRepository.deleteById(r.getId());
-
-                            cancellationStatus.set(CancellationStatus.SUCCESS);
                         },
                         () -> {
                             throw new ReservationNotFoundException(

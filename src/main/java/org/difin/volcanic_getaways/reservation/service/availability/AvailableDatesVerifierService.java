@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface AvailableDatesVerifierService {
 
-    Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDates);
+    Flux<AvailableDateModel> getAvailableDatesReactive(Optional<RequestDates> requestDates);
     List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates);
     List<ManagedDate> lockDates(RequestDates requestDates);
 }

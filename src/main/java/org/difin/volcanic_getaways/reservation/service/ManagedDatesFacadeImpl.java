@@ -27,7 +27,7 @@ public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
     }
 
     public Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDates) {
-        return availableDatesVerifierService.getAvailableDates(requestDates);
+        return availableDatesVerifierService.getAvailableDatesReactive(requestDates);
     }
 
     public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates) {

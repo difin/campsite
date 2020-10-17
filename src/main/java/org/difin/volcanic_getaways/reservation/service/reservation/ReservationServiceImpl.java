@@ -70,7 +70,8 @@ public class ReservationServiceImpl implements ReservationService {
         if (DAYS.between(payload.getBookingDates().getArrival(), payload.getBookingDates().getDeparture()) > availableDates.size()){
 
             throw new RequestedRangeIsBookedException(
-                    messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity", null, null, Locale.getDefault())
+                    messageSource.getMessage("volcanic_getaways.exception.reservation.full.capacity",
+                            null, null, Locale.getDefault())
             );
         }
 

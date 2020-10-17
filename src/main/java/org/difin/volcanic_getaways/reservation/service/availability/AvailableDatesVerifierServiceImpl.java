@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -36,13 +37,14 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
         this.spotsNum = spotsNum;
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDatesOptional) {
+    public Flux<AvailableDateModel> getAvailableDatesReactive(Optional<RequestDates> requestDatesOptional) {
 
         return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDatesOptional))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
+    @Transactional(Transactional.TxType.MANDATORY)
     public List<ManagedDate> lockDates(RequestDates requestDates) {
 
         return managedDateRepository.lockDates(

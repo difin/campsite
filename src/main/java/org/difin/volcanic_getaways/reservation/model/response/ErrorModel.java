@@ -25,8 +25,19 @@ public class ErrorModel {
         errors.add(error);
     }
 
+    public ErrorModel(String message){
+        errors = new ArrayList<>();
+        Error error = new Error(message);
+        errors.add(error);
+    }
+
     public void addError(Exception e){
         Error error = new Error(e);
+        errors.add(error);
+    }
+
+    public void addError(String message){
+        Error error = new Error(message);
         errors.add(error);
     }
 }
