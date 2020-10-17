@@ -42,9 +42,7 @@ public class ReservationController {
 	}
 
 	@DeleteMapping(
-			path = "/{bookingReference}",
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE
+			path = "/{bookingReference}"
 	)
 	public Mono<Void> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
 
@@ -54,8 +52,7 @@ public class ReservationController {
 
 	@PutMapping(
 			path = "/{bookingReference}",
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE
+			consumes = MediaType.APPLICATION_JSON_VALUE
 	)
 	public Mono<Void> updateReservation(@PathVariable BookingReferencePayload bookingReference,
 										@Valid @RequestBody ReservationPayload payload) {
