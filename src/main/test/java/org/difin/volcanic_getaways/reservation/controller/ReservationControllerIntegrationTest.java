@@ -1,8 +1,8 @@
 package org.difin.volcanic_getaways.reservation.controller;
 
-import org.difin.volcanic_getaways.reservation.model.request.BookingDates;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
+import org.difin.volcanic_getaways.reservation.utils.TestUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,35 +44,17 @@ class ReservationControllerIntegrationTest {
     @Value("${app.spots-num}")
     int spots;
 
+    private TestUtils testUtils = new TestUtils();
+    private final ReservationPayload payload = testUtils.generateReservationPayload(1);
+
     @BeforeEach
     public void beforeEach() {
         cancellationService.deleteAllReservations();
     }
 
-    private final String arrival = "2020-November-01";
-    private final String departure = "2020-November-04";
-    private final String name = "some name";
-    private final String email = "someone@somewhere.com";
-
-    private final BookingDates bookingDates = new BookingDates(arrival, departure);
-    private final ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
-
     @DisplayName("When creating a new reservation and there are available dates then reservations are creates successfully")
     @Test
     public void makingReservationTest() {
-
-        // For future reference - getting result and closing stream
-        //
-        // BookingReference result =
-        //     webTestClient
-        //         .post()
-        //         .uri("http://localhost:" + port + "/api/reservations")
-        //         .body(Mono.just(payload), ReservationPayload.class)
-        //         .exchange()
-        //         .expectStatus().isOk()
-        //         .expectBody(BookingReference.class)
-        //         .returnResult()
-        //         .getResponseBody();
 
         webTestClient
                 .post()

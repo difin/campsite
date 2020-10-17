@@ -58,7 +58,7 @@ public class ReservationController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public Mono<Void> updateReservation(@PathVariable BookingReferencePayload bookingReference,
-												@Valid @RequestBody ReservationPayload payload) {
+										@Valid @RequestBody ReservationPayload payload) {
 
 		return reservationFacade.updateReservation(
 				methodParamValidator.validateBookingReference(bookingReference), payload);
