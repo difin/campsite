@@ -40,7 +40,7 @@ public class ManagedDatesController {
 			  LocalDate departure) {
 
 		return managedDatesFacade
-			.getAvailableDates(
+			.getAvailableDatesReactive(
 					methodParamValidator.validateRequestDates(
 							new RequestDates(
 									arrival == null ? LocalDate.now().plusDays(1) : arrival,

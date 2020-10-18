@@ -21,7 +21,7 @@ public class UpdateServiceImpl implements UpdateService {
     private CancellationService cancellationService;
     private ReservationService reservationService;
 
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public UpdateServiceImpl(ReactiveExecutionService reactiveExecutionService,
@@ -57,7 +57,7 @@ public class UpdateServiceImpl implements UpdateService {
         else
             result = false;
 
-        LOGGER.debug("updateReservationBlocking - exit; sucess=[" + result + "]");
+        LOGGER.debug("updateReservationBlocking - exit; succeeded=[" + result + "]");
 
         return result;
     }

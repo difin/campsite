@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface ManagedDatesFacade {
 
-   Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates);
+   Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates);
+
    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
-   List<ManagedDate> lockDates(RequestDates requestDates);
-   void generateManagedDates();
+   List<ManagedDate> lockDatesBlocking(RequestDates requestDates);
+   void generateManagedDatesBlocking();
 }

@@ -3,8 +3,7 @@ package org.difin.volcanic_getaways.reservation.controller;
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
 import org.difin.volcanic_getaways.reservation.model.response.BookingReferenceModel;
-import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
-import org.difin.volcanic_getaways.reservation.service.reservation.ReservationService;
+import org.difin.volcanic_getaways.reservation.service.ReservationFacade;
 import org.difin.volcanic_getaways.reservation.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -47,13 +45,7 @@ class ReservationControllerIntegrationConcurrentTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    CancellationService cancellationService;
-
-    @Autowired
-    ReservationService reservationService;
-
-    @Autowired
-    private MessageSource messageSource;
+    ReservationFacade reservationFacade;
 
     @Value("${app.spots-num}")
     int spotsOnSite;
@@ -63,7 +55,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
     @BeforeEach
     public void beforeEach() {
-        cancellationService.deleteAllReservations();
+        reservationFacade.cancelAllReservationsBlocking();
     }
 
     @DisplayName("When trying to reserve the same range of dates concurrently then only #spotsOnSite reservations succeeds " +
@@ -96,7 +88,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         threads.forEach(CompletableFuture::join);
 
-        List<Reservation> reservations = reservationService.getReservationsBlocking();
+        List<Reservation> reservations = reservationFacade.getReservationsBlocking();
 
         assertEquals(spotsOnSite, reservations.size());
     }
@@ -142,7 +134,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         threads.forEach(CompletableFuture::join);
 
-        assertEquals(reservationService.getReservationsBlocking()
+        assertEquals(reservationFacade.getReservationsBlocking()
                 .stream()
                 .filter(r -> r.getBookingRef().equals(bookingRef.getBookingReference()))
                 .count(), 1);
@@ -181,7 +173,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         // Getting all booking references
         List<String> bookingRefs =
-            reservationService.getReservationsBlocking()
+                reservationFacade.getReservationsBlocking()
                 .stream()
                 .map(r -> r.getBookingRef())
                 .collect(Collectors.toList());
@@ -212,7 +204,7 @@ class ReservationControllerIntegrationConcurrentTest {
         threads.forEach(CompletableFuture::join);
 
         List<String> bookingRefsAfterUpdates =
-                reservationService.getReservationsBlocking()
+                reservationFacade.getReservationsBlocking()
                         .stream()
                         .map(r -> r.getBookingRef())
                         .collect(Collectors.toList());

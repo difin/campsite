@@ -41,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     private ModelConverter modelConverter;
     private MessageSource messageSource;
 
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
@@ -72,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
                 ", arrival=" + payload.getBookingDates().getArrival() + ", departure=" + payload.getBookingDates().getDeparture() + "]" +
                 "; bookingRef=" + bookingRef + "]");
 
-        managedDatesFacade.lockDates(payload.getBookingDates());
+        managedDatesFacade.lockDatesBlocking(payload.getBookingDates());
 
         List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(payload.getBookingDates());
 

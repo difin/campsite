@@ -11,5 +11,5 @@ public interface AvailableDatesVerifierService {
 
     Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates);
     List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
-    List<ManagedDate> lockDates(RequestDates requestDates);
+    List<ManagedDate> lockDatesBlocking(RequestDates requestDates);
 }

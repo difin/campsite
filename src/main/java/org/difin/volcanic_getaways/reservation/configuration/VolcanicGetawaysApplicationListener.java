@@ -25,6 +25,6 @@ public class VolcanicGetawaysApplicationListener implements ApplicationListener<
 
         Locale.setDefault(Locale.ENGLISH);
 
-        managedDatesFacade.generateManagedDates();
+        managedDatesFacade.generateManagedDatesBlocking();
     }
 }

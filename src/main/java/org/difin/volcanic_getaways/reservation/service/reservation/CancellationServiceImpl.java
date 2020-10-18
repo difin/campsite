@@ -80,7 +80,7 @@ public class CancellationServiceImpl implements CancellationService {
     }
 
     @Transactional(propagation=REQUIRED, timeout=3)
-    public void deleteAllReservations() {
+    public void cancelAllReservationsBlocking() {
 
         List<Reservation> reservations = reservationRepository.findAll();
         reservations.forEach(t -> cancelReservationBlocking(new BookingReferencePayload(t.getBookingRef())));

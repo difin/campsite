@@ -1,7 +1,7 @@
 package org.difin.volcanic_getaways.reservation.controller;
 
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
-import org.difin.volcanic_getaways.reservation.service.reservation.CancellationService;
+import org.difin.volcanic_getaways.reservation.service.ReservationFacade;
 import org.difin.volcanic_getaways.reservation.utils.TestUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -37,20 +36,17 @@ class ReservationControllerIntegrationTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    CancellationService cancellationService;
+    ReservationFacade reservationFacade;
 
     @Value("${app.spots-num}")
     int spots;
 
-    private TestUtils testUtils = new TestUtils();
+    private final TestUtils testUtils = new TestUtils();
     private final ReservationPayload payload = testUtils.generateReservationPayload(1, 3);
 
     @BeforeEach
     public void beforeEach() {
-        cancellationService.deleteAllReservations();
+        reservationFacade.cancelAllReservationsBlocking();
     }
 
     @DisplayName("When creating a new reservation and there are available dates then reservations are creates successfully")

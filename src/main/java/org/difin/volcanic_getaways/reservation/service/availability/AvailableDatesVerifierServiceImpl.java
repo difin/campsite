@@ -62,16 +62,16 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
     }
 
     @Transactional(propagation=MANDATORY, timeout=3)
-    public List<ManagedDate> lockDates(RequestDates requestDates) {
+    public List<ManagedDate> lockDatesBlocking(RequestDates requestDates) {
 
-        LOGGER.trace("lockDates - enter");
+        LOGGER.trace("lockDatesBlocking - enter");
 
         List<ManagedDate> dates =
                 managedDateRepository.lockDates(
                         requestDates.getArrival(),
                         requestDates.getDeparture().minusDays(1));
 
-        LOGGER.trace("lockDates - exit");
+        LOGGER.trace("lockDatesBlocking - exit");
 
         return dates;
     }

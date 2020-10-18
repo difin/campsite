@@ -38,7 +38,7 @@ public class ReservationController {
 	)
 	public Mono<BookingReferenceModel> makeReservation(@Valid @RequestBody ReservationPayload payload) {
 
-		return reservationFacade.makeReservation(payload);
+		return reservationFacade.makeReservationReactive(payload);
 	}
 
 	@DeleteMapping(
@@ -46,7 +46,7 @@ public class ReservationController {
 	)
 	public Mono<Void> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
 
-		return reservationFacade.cancelReservation(
+		return reservationFacade.cancelReservationReactive(
 				methodParamValidator.validateBookingReference(bookingReference));
 	}
 
@@ -57,7 +57,7 @@ public class ReservationController {
 	public Mono<Void> updateReservation(@PathVariable BookingReferencePayload bookingReference,
 										@Valid @RequestBody ReservationPayload payload) {
 
-		return reservationFacade.updateReservation(
+		return reservationFacade.updateReservationReactive(
 				methodParamValidator.validateBookingReference(bookingReference), payload);
 	}
 
@@ -71,7 +71,7 @@ public class ReservationController {
 				LocalDate departure) {
 
 		return reservationFacade
-				.getReservations(
+				.getReservationsReactive(
 						methodParamValidator.validateRequestDates(
 								new RequestDates(
 										arrival == null ? LocalDate.now().plusDays(1) : arrival,
