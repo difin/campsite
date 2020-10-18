@@ -61,7 +61,7 @@ public class SpringConfiguration {
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("volcanic_getaways.reservation"))
+                .apis(RequestHandlerSelectors.basePackage("org.difin.volcanic_getaways.reservation"))
                 .paths(PathSelectors.any())
                 .build();
     }

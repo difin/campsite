@@ -65,8 +65,8 @@ class ReservationControllerIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.bookingReference").exists()
-                    .jsonPath("$.bookingReference").value(hasLength(36));
-
+                    .jsonPath("$.bookingReference").value(hasLength(36))
+                .returnResult();
     }
 
     @DisplayName("A date can be booked only the specified maximum number of times and then error message it returned")
@@ -82,7 +82,8 @@ class ReservationControllerIntegrationTest {
                         .expectStatus().isOk()
                         .expectBody()
                             .jsonPath("$.bookingReference").exists()
-                            .jsonPath("$.bookingReference").value(hasLength(36));
+                            .jsonPath("$.bookingReference").value(hasLength(36))
+                        .returnResult();
 
         IntStream.range(0, spots).forEach(i -> successFunc.run());
 
@@ -93,6 +94,8 @@ class ReservationControllerIntegrationTest {
             .exchange()
             .expectStatus().value(equalTo(HttpStatus.CONFLICT.value()))
             .expectBody()
-                .jsonPath("$.errors").exists();
+                .jsonPath("$.errors").exists()
+                .jsonPath("$.help").exists()
+            .returnResult();
     }
 }
