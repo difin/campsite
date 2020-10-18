@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifierService {
@@ -47,12 +49,19 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    @Transactional(Transactional.TxType.MANDATORY)
+    @Transactional(propagation=MANDATORY, timeout=2)
     public List<ManagedDate> lockDates(RequestDates requestDates) {
 
-        return managedDateRepository.lockDates(
+        LOGGER.trace("lockDates - enter");
+
+        List<ManagedDate> dates =
+            managedDateRepository.lockDates(
                 requestDates.getArrival(),
                 requestDates.getDeparture().minusDays(1));
+
+        LOGGER.trace("lockDates - exit");
+
+        return dates;
     }
 
     public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDatesOptional) {

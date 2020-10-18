@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -64,7 +65,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(modelConverter::reservationEntityToBookingReferenceDTO);
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional(propagation=REQUIRED, timeout=2)
     public Reservation makeReservationBlocking(ReservationPayload payload, Optional<String> bookingRef){
 
         LOGGER.debug("makeReservationBlocking - enter; payload: [name=" + payload.getName() + ", email=" + payload.getEmail() +
@@ -107,7 +108,7 @@ public class ReservationServiceImpl implements ReservationService {
                         }
                 );
 
-        LOGGER.debug("makeReservationBlocking - exit; result=" + reservation.getBookingRef());
+        LOGGER.debug("makeReservationBlocking - exit; client=[" + payload.getName() + "], bookingRef=" + reservation.getBookingRef());
 
         return reservation;
     }

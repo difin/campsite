@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 
 @Service
 public class CancellationServiceImpl implements CancellationService {
@@ -45,7 +47,7 @@ public class CancellationServiceImpl implements CancellationService {
                 .then();
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional(propagation=REQUIRED, timeout=2)
     public boolean cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
         LOGGER.debug("cancelReservationBlocking - enter; booking reference=[" + bookingReferencePayload.getBookingReference() + "]");
@@ -77,7 +79,7 @@ public class CancellationServiceImpl implements CancellationService {
         return true;
     }
 
-    @Transactional
+    @Transactional(propagation=REQUIRED, timeout=2)
     public void deleteAllReservations() {
 
         List<Reservation> reservations = reservationRepository.findAll();

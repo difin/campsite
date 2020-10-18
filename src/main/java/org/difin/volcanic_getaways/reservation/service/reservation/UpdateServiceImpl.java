@@ -7,10 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
+
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 
 @Service
 public class UpdateServiceImpl implements UpdateService {
@@ -36,7 +38,7 @@ public class UpdateServiceImpl implements UpdateService {
                 .then();
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional(propagation=REQUIRED, timeout=2)
     public boolean updateReservationBlocking(BookingReferencePayload bookingReferencePayload,
                                              ReservationPayload payload) {
 
