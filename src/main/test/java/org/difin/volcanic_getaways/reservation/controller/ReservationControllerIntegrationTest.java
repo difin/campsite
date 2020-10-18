@@ -46,7 +46,7 @@ class ReservationControllerIntegrationTest {
     int spots;
 
     private TestUtils testUtils = new TestUtils();
-    private final ReservationPayload payload = testUtils.generateReservationPayload(1);
+    private final ReservationPayload payload = testUtils.generateReservationPayload(1, 3);
 
     @BeforeEach
     public void beforeEach() {

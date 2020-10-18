@@ -49,7 +49,7 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    @Transactional(propagation=MANDATORY, timeout=2)
+    @Transactional(propagation=MANDATORY, timeout=3)
     public List<ManagedDate> lockDates(RequestDates requestDates) {
 
         LOGGER.trace("lockDates - enter");

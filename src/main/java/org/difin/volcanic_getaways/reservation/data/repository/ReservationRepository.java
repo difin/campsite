@@ -21,8 +21,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             "join FETCH r.reservedDates             " +
             "where r.bookingRef = :bookingReference ")
     @QueryHints(value = {
-            @QueryHint(name = "javax.persistence.lock.timeout", value ="1000"),
-            @QueryHint(name = "javax.persistence.query.timeout", value ="1000")
+            @QueryHint(name = "javax.persistence.lock.timeout", value ="2000"),
+            @QueryHint(name = "javax.persistence.query.timeout", value ="2000")
     })
     Reservation findByBookingRef(String bookingReference);
 

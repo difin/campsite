@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -36,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         }
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "10000")
 class ReservationControllerIntegrationConcurrentTest {
 
     @LocalServerPort
@@ -57,6 +58,7 @@ class ReservationControllerIntegrationConcurrentTest {
     @Value("${app.spots-num}")
     int spotsOnSite;
 
+    private final Random random = new Random();
     private final TestUtils testUtils = new TestUtils();
 
     @BeforeEach
@@ -64,11 +66,12 @@ class ReservationControllerIntegrationConcurrentTest {
         cancellationService.deleteAllReservations();
     }
 
-    @DisplayName("When trying to reserve the same range of dates concurrently then only #spotsOnSite reservations succeeds and others fail site at full capacity message")
+    @DisplayName("When trying to reserve the same range of dates concurrently then only #spotsOnSite reservations succeeds " +
+            "and others fail site with site full capacity message")
     @Test
     public void concurrentReservationTest() {
 
-        List<CompletableFuture<Void>> threads = new ArrayList<>();
+        Vector<CompletableFuture<Void>> threads = new Vector<>();
 
         IntStream.range(1, 1000).forEach(i -> {
             CompletableFuture<Void> thread =
@@ -76,7 +79,7 @@ class ReservationControllerIntegrationConcurrentTest {
                 webTestClient
                     .post()
                     .uri("http://localhost:" + port + "/api/reservations")
-                    .body(Mono.just(testUtils.generateReservationPayload(3)), ReservationPayload.class)
+                    .body(Mono.just(testUtils.generateReservationPayload(3, 3)), ReservationPayload.class)
                     .exchange()
                     .expectStatus().value(oneOf(HttpStatus.OK.value(), HttpStatus.CONFLICT.value()))
                     .expectBody(String.class)
@@ -84,7 +87,8 @@ class ReservationControllerIntegrationConcurrentTest {
                         Map<String, String> map = testUtils.jsonToMap(t.getResponseBody());
                         assertTrue(((map.containsKey("bookingReference") && map.get("bookingReference").length() == 36) ||
                                    (map.containsKey("errors"))));
-                    });
+                        })
+                    .returnResult();
                 } );
 
             threads.add(thread);
@@ -102,7 +106,7 @@ class ReservationControllerIntegrationConcurrentTest {
     @Test
     public void concurrentUpdateTest() {
 
-        ReservationPayload reservationPayload = testUtils.generateReservationPayload(1);
+        ReservationPayload reservationPayload = testUtils.generateReservationPayload(1, 3);
 
          BookingReferenceModel bookingRef =
              webTestClient
@@ -115,21 +119,23 @@ class ReservationControllerIntegrationConcurrentTest {
                  .returnResult()
                  .getResponseBody();
 
-        List<CompletableFuture<Void>> threads = new ArrayList<>();
+        Vector<CompletableFuture<Void>> threads = new Vector<>();
 
         IntStream.range(1, 1000).forEach(i -> {
             CompletableFuture<Void> thread =
-                    CompletableFuture.runAsync(() -> {
-                            webTestClient
-                                .put()
-                                .uri("http://localhost:" + port + "/api/reservations/" + bookingRef.getBookingReference())
-                                .body(Mono.just(testUtils.generateReservationPayload(20)), ReservationPayload.class)
-                                .exchange()
-                                .expectStatus().value(oneOf(
-                                        HttpStatus.OK.value(),
-                                        HttpStatus.CONFLICT.value(),
-                                        HttpStatus.NOT_FOUND.value()));
-                    } );
+                CompletableFuture.runAsync(() -> {
+                    webTestClient
+                        .put()
+                        .uri("http://localhost:" + port + "/api/reservations/" + bookingRef.getBookingReference())
+                        .body(Mono.just(testUtils.generateReservationPayload(20, 3)), ReservationPayload.class)
+                        .exchange()
+                        .expectStatus().value(oneOf(
+                            HttpStatus.OK.value(),
+                            HttpStatus.CONFLICT.value(),
+                            HttpStatus.NOT_FOUND.value()))
+                        .expectBody()
+                        .returnResult();
+                } );
 
             threads.add(thread);
         });
@@ -140,5 +146,78 @@ class ReservationControllerIntegrationConcurrentTest {
                 .stream()
                 .filter(r -> r.getBookingRef().equals(bookingRef.getBookingReference()))
                 .count(), 1);
+    }
+
+    @DisplayName("When performing massive concurrent updates then no indefinite deadlock or other unexpect errors occur")
+    @Test
+    public void concurrentMultipleUpdatesTest() {
+
+        Vector<CompletableFuture<Void>> threads = new Vector<>();
+
+        // Creating up to 100 random reservations to semi-fill the database
+        // 10 spots per date, if stay length is 3 then max 100 reservations, but here spots num is random and some will conflict
+        IntStream.range(1, 200).forEach(i -> {
+            CompletableFuture<Void> thread =
+                CompletableFuture.runAsync(() -> {
+                    webTestClient
+                        .post()
+                        .uri("http://localhost:" + port + "/api/reservations")
+                        .body(Mono.just(testUtils.generateReservationPayload(27)), ReservationPayload.class)
+                        .exchange()
+                        .expectStatus().value(oneOf(HttpStatus.OK.value(), HttpStatus.CONFLICT.value()))
+                        .expectBody(String.class)
+                        .consumeWith(t -> {
+                            Map<String, String> map = testUtils.jsonToMap(t.getResponseBody());
+                            assertTrue(((map.containsKey("bookingReference") && map.get("bookingReference").length() == 36) ||
+                                    (map.containsKey("errors"))));
+                        })
+                        .returnResult();
+                } );
+
+            threads.add(thread);
+        });
+
+        threads.forEach(CompletableFuture::join);
+
+        // Getting all booking references
+        List<String> bookingRefs =
+            reservationService.getReservationsBlocking(Optional.empty())
+                .stream()
+                .map(r -> r.getBookingRef())
+                .collect(Collectors.toList());
+
+        threads.clear();
+
+        // Updating reservations to random date ranges
+        // Verifying that there are no exceptions or deadlocks
+        IntStream.range(1, 2000).forEach(i -> {
+            CompletableFuture<Void> thread =
+                CompletableFuture.runAsync(() -> {
+                    webTestClient
+                        .put()
+                        .uri("http://localhost:" + port + "/api/reservations" + bookingRefs.get(random.ints(1,4).findFirst().getAsInt()))
+                        .body(Mono.just(testUtils.generateReservationPayload(27)), ReservationPayload.class)
+                        .exchange()
+                        .expectStatus().value(oneOf(
+                            HttpStatus.OK.value(),
+                            HttpStatus.CONFLICT.value(),
+                            HttpStatus.NOT_FOUND.value()))
+                        .expectBody()
+                        .returnResult();
+                    } );
+
+            threads.add(thread);
+        });
+
+        threads.forEach(CompletableFuture::join);
+
+        List<String> bookingRefsAfterUpdates =
+                reservationService.getReservationsBlocking(Optional.empty())
+                        .stream()
+                        .map(r -> r.getBookingRef())
+                        .collect(Collectors.toList());
+
+        // Checking that number of reservations remained the same
+        assertTrue(bookingRefs.size() == bookingRefsAfterUpdates.size());
     }
 }

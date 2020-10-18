@@ -65,7 +65,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(modelConverter::reservationEntityToBookingReferenceDTO);
     }
 
-    @Transactional(propagation=REQUIRED, timeout=2)
+    @Transactional(propagation=REQUIRED, timeout=3)
     public Reservation makeReservationBlocking(ReservationPayload payload, Optional<String> bookingRef){
 
         LOGGER.debug("makeReservationBlocking - enter; payload: [name=" + payload.getName() + ", email=" + payload.getEmail() +

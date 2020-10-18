@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +32,14 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler  {
 
     @ExceptionHandler(value = {RequestedRangeIsBookedException.class})
     protected ResponseEntity<Object> handleConflict(RequestedRangeIsBookedException e, WebRequest request) {
+
+        ErrorModel errorModel = new ErrorModel(e);
+
+        return new ResponseEntity(errorModel, new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = {JpaSystemException.class})
+    protected ResponseEntity<Object> handleJpaSystemException(JpaSystemException e, WebRequest request) {
 
         ErrorModel errorModel = new ErrorModel(e);
 

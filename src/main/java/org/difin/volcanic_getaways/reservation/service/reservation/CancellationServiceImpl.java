@@ -47,7 +47,7 @@ public class CancellationServiceImpl implements CancellationService {
                 .then();
     }
 
-    @Transactional(propagation=REQUIRED, timeout=2)
+    @Transactional(propagation=REQUIRED, timeout=3)
     public boolean cancelReservationBlocking(BookingReferencePayload bookingReferencePayload) {
 
         LOGGER.debug("cancelReservationBlocking - enter; booking reference=[" + bookingReferencePayload.getBookingReference() + "]");
@@ -79,7 +79,7 @@ public class CancellationServiceImpl implements CancellationService {
         return true;
     }
 
-    @Transactional(propagation=REQUIRED, timeout=2)
+    @Transactional(propagation=REQUIRED, timeout=3)
     public void deleteAllReservations() {
 
         List<Reservation> reservations = reservationRepository.findAll();

@@ -38,7 +38,7 @@ public class UpdateServiceImpl implements UpdateService {
                 .then();
     }
 
-    @Transactional(propagation=REQUIRED, timeout=2)
+    @Transactional(propagation=REQUIRED, timeout=3)
     public boolean updateReservationBlocking(BookingReferencePayload bookingReferencePayload,
                                              ReservationPayload payload) {
 

@@ -23,8 +23,8 @@ public interface ManagedDateRepository extends JpaRepository<ManagedDate, Intege
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(SELECT_DATES_RANGE)
     @QueryHints(value = {
-            @QueryHint(name = "javax.persistence.lock.timeout", value ="1000"),
-            @QueryHint(name = "javax.persistence.query.timeout", value ="1000")
+            @QueryHint(name = "javax.persistence.lock.timeout", value ="2000"),
+            @QueryHint(name = "javax.persistence.query.timeout", value ="2000")
     })
     List<ManagedDate> lockDates(LocalDate arrival, LocalDate departure);
 

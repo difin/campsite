@@ -21,13 +21,20 @@ public class TestUtils {
 
     public ReservationPayload generateReservationPayload(int numPossibleDateRanges) {
 
+        int stayLength = random.ints(1,4).findFirst().getAsInt();
+
+        return generateReservationPayload(numPossibleDateRanges, stayLength);
+    }
+
+    public ReservationPayload generateReservationPayload(int numPossibleDateRanges, int stayLength) {
+
         List<BookingDates> bookingDatesList = new ArrayList<>();
 
         IntStream.range(1, numPossibleDateRanges+1)
                 .forEach(dayOffset -> {
                     bookingDatesList.add(new BookingDates(
                             LocalDate.now().plusDays(dayOffset),
-                            LocalDate.now().plusDays(dayOffset+3)));
+                            LocalDate.now().plusDays(dayOffset+stayLength)));
                 });
 
         String name = faker.name().fullName();
