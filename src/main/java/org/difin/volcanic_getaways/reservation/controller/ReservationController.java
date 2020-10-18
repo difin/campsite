@@ -1,5 +1,6 @@
 package org.difin.volcanic_getaways.reservation.controller;
 
+import io.swagger.annotations.ApiParam;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.request.ReservationPayload;
@@ -16,7 +17,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "reservations")
@@ -61,28 +61,21 @@ public class ReservationController {
 				methodParamValidator.validateBookingReference(bookingReference), payload);
 	}
 
-	@GetMapping(
-			params = {"arrival" , "departure"},
-			produces = MediaType.APPLICATION_JSON_VALUE
-	)
-	public Flux<ReservationModel> getReservations(@RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-												  LocalDate arrival,
-												  @RequestParam @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-												  LocalDate departure) {
-		return reservationFacade
-				.getReservations(
-						Optional.of(
-							methodParamValidator.validateRequestDates(
-									new RequestDates(arrival, departure))));
-	}
-
-	@GetMapping(
-			produces = MediaType.APPLICATION_JSON_VALUE
-	)
-	public Flux<ReservationModel> getReservations() {
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public Flux<ReservationModel> getReservations(
+				@RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
+				@ApiParam(name="arrival", value = "arrival date, default: tomorrow", defaultValue="2020-November-07", required=false)
+				LocalDate arrival,
+				@RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
+				@ApiParam(name="departure", value = "departure date, default: one month from now", defaultValue="2020-November-10", required=false)
+				LocalDate departure) {
 
 		return reservationFacade
 				.getReservations(
-						Optional.empty());
+						methodParamValidator.validateRequestDates(
+								new RequestDates(
+										arrival == null ? LocalDate.now().plusDays(1) : arrival,
+										departure == null ? LocalDate.now().plusMonths(1) : departure
+								)));
 	}
 }

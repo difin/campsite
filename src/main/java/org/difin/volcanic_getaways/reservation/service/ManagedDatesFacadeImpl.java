@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
@@ -26,11 +25,11 @@ public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
         this.managedDatesCreationBatchService = managedDatesCreationBatchService;
     }
 
-    public Flux<AvailableDateModel> getAvailableDates(Optional<RequestDates> requestDates) {
+    public Flux<AvailableDateModel> getAvailableDates(RequestDates requestDates) {
         return availableDatesVerifierService.getAvailableDatesReactive(requestDates);
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates) {
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
         return availableDatesVerifierService.getAvailableDatesBlocking(requestDates);
     }
 

@@ -63,9 +63,5 @@ spring.datasource.url|jdbc:h2:file:~/volcanic_getaways/h2|Includes path where to
 
 * Under default configuration: http://localhost:9000/api/
 * The REST API is reactive. All routes return Flux\<T\> or Mono\<T\> streams. Flux is a stream of 0 or more elements and Mono is a stream of 0 or 1 element.
-
-## Routes
-
-Route|Parameters|Request Body|Response Body
------|----------|------------|-------------
-/available-dates?arrival=_arrival_&departure=_departure_|arrival and departure parameters' format: uuuu-MMM-dd. <br/><br/>Example: 2020-November-07|None|Flux\<JSON List of available dates\>
+* To discover supported API Routes, parameters etc, please start up the application and navigate to http://localhost:9000/api/swagger-ui.htm
+ 

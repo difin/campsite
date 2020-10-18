@@ -16,6 +16,7 @@ public interface ReservationService {
     Mono<BookingReferenceModel> makeReservationReactive(ReservationPayload payload);
     Reservation makeReservationBlocking(ReservationPayload payload, Optional<String> bookingRef);
 
-    Flux<ReservationModel> getReservationsReactive(Optional<RequestDates> requestDates);
-    List<Reservation> getReservationsBlocking(Optional<RequestDates> requestDates);
+    Flux<ReservationModel> getReservationsReactive(RequestDates requestDates);
+    List<Reservation> getReservationsBlocking(RequestDates requestDates);
+    List<Reservation> getReservationsBlocking();
 }

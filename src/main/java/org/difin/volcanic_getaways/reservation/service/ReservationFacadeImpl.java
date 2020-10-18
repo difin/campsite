@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
 @Service
 public class ReservationFacadeImpl implements ReservationFacade {
 
@@ -43,7 +41,7 @@ public class ReservationFacadeImpl implements ReservationFacade {
         return updateService.updateReservationReactive(bookingReferencePayload, payload);
     }
 
-    public Flux<ReservationModel> getReservations(Optional<RequestDates> requestDates){
+    public Flux<ReservationModel> getReservations(RequestDates requestDates){
         return reservationService.getReservationsReactive(requestDates);
     }
 }

@@ -6,11 +6,10 @@ import org.difin.volcanic_getaways.reservation.model.response.AvailableDateModel
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface AvailableDatesVerifierService {
 
-    Flux<AvailableDateModel> getAvailableDatesReactive(Optional<RequestDates> requestDates);
-    List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDates);
+    Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates);
+    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
     List<ManagedDate> lockDates(RequestDates requestDates);
 }

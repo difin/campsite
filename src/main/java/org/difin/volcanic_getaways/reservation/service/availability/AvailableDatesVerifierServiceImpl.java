@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
@@ -42,38 +40,16 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
         this.modelConverter = modelConverter;
     }
 
-    public Flux<AvailableDateModel> getAvailableDatesReactive(Optional<RequestDates> requestDatesOptional) {
+    public Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDatesOptional) {
 
         return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDatesOptional))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    @Transactional(propagation=MANDATORY, timeout=3)
-    public List<ManagedDate> lockDates(RequestDates requestDates) {
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
 
-        LOGGER.trace("lockDates - enter");
-
-        List<ManagedDate> dates =
-            managedDateRepository.lockDates(
-                requestDates.getArrival(),
-                requestDates.getDeparture().minusDays(1));
-
-        LOGGER.trace("lockDates - exit");
-
-        return dates;
-    }
-
-    public List<ManagedDate> getAvailableDatesBlocking(Optional<RequestDates> requestDatesOptional) {
-
-        LOGGER.debug("getAvailableDatesBlocking - enter; for range=" + requestDatesOptional.map(
-                t -> { return t.getArrival() + "," + t.getDeparture(); }));
-
-        RequestDates requestDates = requestDatesOptional.orElse(
-                new RequestDates(
-                        LocalDate.now().plusDays(1),
-                        LocalDate.now().plusMonths(1))
-        );
+        LOGGER.debug("getAvailableDatesBlocking - enter; for range=" + requestDates.getArrival() + "," + requestDates.getDeparture());
 
         List<ManagedDate> result =
             managedDateRepository.getAvailableDates(spotsNum,
@@ -83,5 +59,20 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
         LOGGER.debug("getAvailableDatesBlocking - exit; found " + result.size() + " available dates");
 
         return result;
+    }
+
+    @Transactional(propagation=MANDATORY, timeout=3)
+    public List<ManagedDate> lockDates(RequestDates requestDates) {
+
+        LOGGER.trace("lockDates - enter");
+
+        List<ManagedDate> dates =
+                managedDateRepository.lockDates(
+                        requestDates.getArrival(),
+                        requestDates.getDeparture().minusDays(1));
+
+        LOGGER.trace("lockDates - exit");
+
+        return dates;
     }
 }

@@ -74,7 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         managedDatesFacade.lockDates(payload.getBookingDates());
 
-        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(Optional.of(payload.getBookingDates()));
+        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(payload.getBookingDates());
 
         if (DAYS.between(payload.getBookingDates().getArrival(), payload.getBookingDates().getDeparture()) > availableDates.size()){
 
@@ -113,7 +113,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    public Flux<ReservationModel> getReservationsReactive(Optional<RequestDates> requestDates) {
+    public Flux<ReservationModel> getReservationsReactive(RequestDates requestDates) {
 
         return reactiveExecutionService.exec(() ->
                 getReservationsBlocking(requestDates))
@@ -121,15 +121,10 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(modelConverter::reservationEntityToReservationDTO);
     }
 
-    public List<Reservation> getReservationsBlocking(Optional<RequestDates> requestDatesOptional) {
+    public List<Reservation> getReservationsBlocking(RequestDates requestDates) {
 
         LOGGER.debug("getReservationsBlocking - enter; dates range=" +
-                requestDatesOptional.map(t -> t.getArrival() + ", " + t.getDeparture()));
-
-        RequestDates requestDates = requestDatesOptional.orElse(
-                new RequestDates(
-                        LocalDate.now().plusDays(1),
-                        LocalDate.now().plusMonths(1)));
+                requestDates.getArrival() + ", " + requestDates.getDeparture());
 
         List<Reservation> reservations = reservationRepository
                 .findReservationsForDates(requestDates.getArrival(), requestDates.getDeparture());
@@ -137,5 +132,15 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.debug("getReservationsBlocking - exit; found " + reservations.size() + " reservations");
 
         return reservations;
+    }
+
+    public List<Reservation> getReservationsBlocking() {
+
+        RequestDates requestDates =
+            new RequestDates(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusMonths(1));
+
+        return getReservationsBlocking(requestDates);
     }
 }

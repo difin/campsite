@@ -96,7 +96,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         threads.forEach(CompletableFuture::join);
 
-        List<Reservation> reservations = reservationService.getReservationsBlocking(Optional.empty());
+        List<Reservation> reservations = reservationService.getReservationsBlocking();
 
         assertEquals(spotsOnSite, reservations.size());
     }
@@ -142,7 +142,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         threads.forEach(CompletableFuture::join);
 
-        assertEquals(reservationService.getReservationsBlocking(Optional.empty())
+        assertEquals(reservationService.getReservationsBlocking()
                 .stream()
                 .filter(r -> r.getBookingRef().equals(bookingRef.getBookingReference()))
                 .count(), 1);
@@ -181,7 +181,7 @@ class ReservationControllerIntegrationConcurrentTest {
 
         // Getting all booking references
         List<String> bookingRefs =
-            reservationService.getReservationsBlocking(Optional.empty())
+            reservationService.getReservationsBlocking()
                 .stream()
                 .map(r -> r.getBookingRef())
                 .collect(Collectors.toList());
@@ -212,7 +212,7 @@ class ReservationControllerIntegrationConcurrentTest {
         threads.forEach(CompletableFuture::join);
 
         List<String> bookingRefsAfterUpdates =
-                reservationService.getReservationsBlocking(Optional.empty())
+                reservationService.getReservationsBlocking()
                         .stream()
                         .map(r -> r.getBookingRef())
                         .collect(Collectors.toList());

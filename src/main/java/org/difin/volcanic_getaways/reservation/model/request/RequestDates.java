@@ -20,13 +20,13 @@ import java.time.LocalDate;
 @DepartureAfterArrival(message = "{volcanic_getaways.validation.departure.before.arrival}")
 public class RequestDates {
 
-    @ApiModelProperty(position = 1, example = "2020-October-10")
+    @ApiModelProperty(position = 1, example = "2020-November-07")
     @JsonDeserialize(using= LocalDateDeserializer.class)
     @JsonFormat(pattern="uuuu-MMMM-dd")
     @Future(message = "Arrival {volcanic_getaways.validation.date.cannot.be.in.the.past}")
     private LocalDate arrival;
 
-    @ApiModelProperty(position = 2, example = "2020-October-10")
+    @ApiModelProperty(position = 2, example = "2020-November-10")
     @JsonDeserialize(using= LocalDateDeserializer.class)
     @JsonFormat(pattern="uuuu-MMMM-dd")
     @DateWithinOneMonth(message = "{volcanic_getaways.validation.departure.date.too.far}")
