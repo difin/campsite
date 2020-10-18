@@ -27,18 +27,17 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
+    @Value("${app.spots-num}")
     private int spotsNum;
 
     @Autowired
     public AvailableDatesVerifierServiceImpl(ManagedDateRepository managedDateRepository,
                                   ReactiveExecutionService reactiveExecutionService,
-                                  ModelConverter modelConverter,
-                                  @Value("${app.spots-num}") int spotsNum) {
+                                  ModelConverter modelConverter) {
 
         this.managedDateRepository = managedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
         this.modelConverter = modelConverter;
-        this.spotsNum = spotsNum;
     }
 
     public Flux<AvailableDateModel> getAvailableDatesReactive(Optional<RequestDates> requestDatesOptional) {

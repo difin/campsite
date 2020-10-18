@@ -4,9 +4,11 @@ import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public interface ManagedDateRepository extends JpaRepository<ManagedDate, Intege
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(SELECT_DATES_RANGE)
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="1000")})
     List<ManagedDate> lockDates(LocalDate arrival, LocalDate departure);
 
     @Query(SELECT_DATES_RANGE)
