@@ -57,11 +57,12 @@ java -jar volcanic_getaways.jar
 
 This default configurations can be updated in application.yml:
 
-Property|Value|Description|Notes
+Property|Default Value|Description|Notes
 --------|-----|-----------|-----
 server.port|9000|port to access the application|
 server.servlet.context-path|/api|context root|
-spring.datasource.url|jdbc:h2:file:~/volcanic_getaways/h2|Includes path where to store H2 database file. Can be changed to use different location on disk or to be in-memory.|if this property is changed, liquibase.url property in the same file must be updated to the same value.  
+spring.datasource.url|jdbc:h2:file:~/volcanic_getaways/h2|Includes path where to store H2 database file. Can be changed to use different location on disk or to be in-memory.|if this property is changed, liquibase.url property in the same file must be updated to the same value.
+app.spots-num|3|number of spots = max number of reservations for the same date|  
 
 ## Important Notes
 
