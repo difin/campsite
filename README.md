@@ -1,11 +1,11 @@
 # Volcanic Getaways
 
-This backend application manages reservations of a camping site which has _N_ camping spots (_N_=3 by default).
-This application provides REST API for interacting with clients.
+This backend application manages reservations of a camping site which has _N_ spots (_N_=3 by default).
+It provides REST API for interacting with clients.
 
 ## Git repository and default branch names
 I wanted to make my solution public, but at the same time to not advertise what it contains.
-Google is not supposed to index branches other than master and main, that's why my only branch is called 'prime'. 
+Google isn't supposed to index branches other than master and main, that's why my only branch has been called 'prime'. 
 
 ## System Requirements to Build the Application:
 
@@ -87,4 +87,4 @@ This application contains following tests types:<br/>
   Unit Tests have been developed for the most important services and models.<br/> 
   Unfortunately, I didn't have enough time to develop Unit Tests for all classes.<br/><br/>
 * Integration tests. <br/><br/> 
-  This includes simple single-threaded tests for select routes and also massive mutli-threaded tests for testing against deadlocks and correctness under concurrent API calls.   
+  This includes simple single-threaded tests and massive multi-threaded tests for testing against deadlocks and correctness under concurrent API calls.   
