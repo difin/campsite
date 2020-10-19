@@ -44,7 +44,10 @@ public class ReservationController {
 	@DeleteMapping(
 			path = "/{bookingReference}"
 	)
-	public Mono<Void> cancelReservation(@PathVariable BookingReferencePayload bookingReference) {
+	public Mono<Void> cancelReservation(
+				@PathVariable
+				@ApiParam(name="bookingReference", value="36 characters booking reference", defaultValue="1fdc99b7-e74a-4d99-bf8b-a49f45f3e367", required=true)
+				BookingReferencePayload bookingReference) {
 
 		return reservationFacade.cancelReservationReactive(
 				methodParamValidator.validateBookingReference(bookingReference));
@@ -54,8 +57,10 @@ public class ReservationController {
 			path = "/{bookingReference}",
 			consumes = MediaType.APPLICATION_JSON_VALUE
 	)
-	public Mono<Void> updateReservation(@PathVariable BookingReferencePayload bookingReference,
-										@Valid @RequestBody ReservationPayload payload) {
+	public Mono<Void> updateReservation(
+				@ApiParam(name="bookingReference", value="36 characters booking reference", defaultValue="1fdc99b7-e74a-4d99-bf8b-a49f45f3e367", required=true)
+				@PathVariable BookingReferencePayload bookingReference,
+				@Valid @RequestBody ReservationPayload payload) {
 
 		return reservationFacade.updateReservationReactive(
 				methodParamValidator.validateBookingReference(bookingReference), payload);
@@ -64,10 +69,10 @@ public class ReservationController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<ReservationModel> getReservations(
 				@RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-				@ApiParam(name="arrival", value = "arrival date, default: tomorrow", defaultValue="2020-November-07", required=false)
+				@ApiParam(name="arrival", value = "starting date; if not provided, tomorrow's date will be used", defaultValue="2020-November-07", required=false)
 				LocalDate arrival,
 				@RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-				@ApiParam(name="departure", value = "departure date, default: one month from now", defaultValue="2020-November-10", required=false)
+				@ApiParam(name="departure", value = "ending date, if not provided, 1 month from now + 1 day's (end date is exclusive) date will be used", defaultValue="2020-November-10", required=false)
 				LocalDate departure) {
 
 		return reservationFacade
@@ -75,7 +80,7 @@ public class ReservationController {
 						methodParamValidator.validateRequestDates(
 								new RequestDates(
 										arrival == null ? LocalDate.now().plusDays(1) : arrival,
-										departure == null ? LocalDate.now().plusMonths(1) : departure
+										departure == null ? LocalDate.now().plusMonths(1).plusDays(1) : departure
 								)));
 	}
 }

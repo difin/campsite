@@ -60,11 +60,11 @@ class RequestDatesTest {
                 .count() == 1);
     }
 
-    @DisplayName("When departure date is more than one month then validation fails")
+    @DisplayName("When departure date is more than one month and one day from now then validation fails")
     @Test
     void departureDateTooFarTest(){
 
-        RequestDates requestDates = new RequestDates(LocalDate.now().plusDays(1), LocalDate.now().plusMonths(1).plusDays(1));
+        RequestDates requestDates = new RequestDates(LocalDate.now().plusDays(1), LocalDate.now().plusMonths(1).plusDays(2));
 
         Set<ConstraintViolation<RequestDates>> violations = validator.validate(requestDates);
 

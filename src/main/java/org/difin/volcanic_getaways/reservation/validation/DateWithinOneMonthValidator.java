@@ -10,6 +10,7 @@ public class DateWithinOneMonthValidator implements ConstraintValidator<DateWith
 
     public boolean isValid(LocalDate date, ConstraintValidatorContext context) {
 
-            return date.isBefore(LocalDate.now().plusMonths(1));
+        // End date is not in range
+        return date.isBefore(LocalDate.now().plusMonths(1).plusDays(2));
     }
 }

@@ -17,6 +17,6 @@ public class BookingReferencePayload {
     @NotNull(message = "volcanic_getaways.validation.booking.reference.null")
     @NotEmpty(message = "volcanic_getaways.validation.booking.reference.empty")
     @Size(min = 36, max = 36)
-    @ApiModelProperty(position = 1, notes = "36 characters UUID value")
+    @ApiModelProperty(position = 1, example= "1fdc99b7-e74a-4d99-bf8b-a49f45f3e367", value="36 characters booking reference")
     private String bookingReference;
 }

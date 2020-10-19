@@ -33,7 +33,7 @@ public class ManagedDatesCreationBatchServiceImpl implements ManagedDatesCreatio
         LOGGER.debug("generateManagedDates - enter");
 
         LocalDate start = LocalDate.now().plusDays(1);
-        LocalDate end = LocalDate.now().plusMonths(1);
+        LocalDate end = LocalDate.now().plusMonths(1).plusDays(1);
 
         List<LocalDate> existingDates =
                 managedDateRepository
@@ -42,9 +42,10 @@ public class ManagedDatesCreationBatchServiceImpl implements ManagedDatesCreatio
                         .map(ManagedDate::getDate)
                         .collect(Collectors.toList());
 
+        // Taking 1 month and 1 more day to stay on the safe side
         List<LocalDate> allDates =
                 Stream.iterate(start, date -> date.plusDays(1))
-                        .limit(DAYS.between(start, end))
+                        .takeWhile(d -> d.isBefore(LocalDate.now().plusMonths(1).plusDays(2)))
                         .collect(Collectors.toList());
 
         allDates.removeAll(existingDates);

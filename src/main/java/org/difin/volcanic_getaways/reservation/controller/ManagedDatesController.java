@@ -33,10 +33,10 @@ public class ManagedDatesController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<AvailableDateModel> getAvailableDates(
 			  @RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-			  @ApiParam(name="arrival", value = "starting date, default: tomorrow", defaultValue="2020-November-07", required=false)
+			  @ApiParam(name="arrival", value = "starting date; if not provided, tomorrow's date will be used", defaultValue="2020-November-07", required=false)
 			  LocalDate arrival,
 			  @RequestParam(required = false) @DateTimeFormat(pattern = "uuuu-MMMM-dd")
-			  @ApiParam(name="departure", value = "ending date, default: one month from now", defaultValue="2020-November-10", required=false)
+			  @ApiParam(name="departure", value = "ending date, if not provided, 1 month from now + 1 day's (end date is exclusive) date will be used", defaultValue="2020-November-10", required=false)
 			  LocalDate departure) {
 
 		return managedDatesFacade
@@ -44,7 +44,7 @@ public class ManagedDatesController {
 					methodParamValidator.validateRequestDates(
 							new RequestDates(
 									arrival == null ? LocalDate.now().plusDays(1) : arrival,
-									departure == null ? LocalDate.now().plusMonths(1) : departure
+									departure == null ? LocalDate.now().plusMonths(1).plusDays(1) : departure
 							)));
 	}
 }
