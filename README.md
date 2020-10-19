@@ -9,7 +9,7 @@ Google isn't supposed to index branches other than master and main, that's why m
 
 ## System Requirements to Build the Application:
 
-- Java 9+
+- JDK 11+
 - Maven
 - Internet Access (for download dependencies by Maven)
 - Writable application's directory (for build artifacts)
@@ -32,6 +32,7 @@ Google isn't supposed to index branches other than master and main, that's why m
 * H2 Database
 * Liquibase
 * Swagger
+* Lombok
 
 ## To Build
 Run in the root directory of this project:
