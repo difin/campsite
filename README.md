@@ -82,7 +82,7 @@ For example, to book dates [2020-November-01, 2020-November-02, 2020-November-03
 * The REST API is reactive. All routes return Flux\<T\> or Mono\<T\> streams. 
   * Flux is a lazy-evaluated reactive non-blocking stream of 0 or more elements.
   * Mono is same, but 0 or 1 elements.
-* To discover the API Routes and models and to try executing the routes you start up the application and navigate to http://localhost:9000/api/swagger-ui.htm
+* To discover the API Routes and models and to try executing the routes you start up the application and navigate to http://localhost:9000/api/swagger-ui.html
  
 ## Testing
 
