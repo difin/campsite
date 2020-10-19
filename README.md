@@ -69,7 +69,7 @@ app.spots-num|3|number of spots = max number of reservations for the same date|
 
 * This application allows to book a stay in the following inclusive date's range: [tomorrow, one month from now].
 <br/><br/>Please note, when providing departure dates in any routes, that date is exclusive.
-For example, to book dates [2020-November-01, 2020-November-02, 2020-November-03], the dates range needs to be arrival=[2020-November-01] and departure=[2020-November-04], because the departure date is not considered a day of your state. <br/> <br/>
+For example, to book dates [2020-November-01, 2020-November-02, 2020-November-03], the dates range needs to be arrival=[2020-November-01] and departure=[2020-November-04], because the departure date is not considered a day of the stay, that when the client leaves. <br/> <br/>
 * When application starts, it inserts 'Managed Dates' for the period of 1 month from now into the corresponding database table, if these dates are not there for this period.
 <br/><br/>Managed Dates are dates that are available for reservation.<br/><br/> 
     * The same process runs as a batch job daily to make sure the system is always able to handle one month of dates from now.
