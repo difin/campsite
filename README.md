@@ -34,6 +34,7 @@ I also named the repository itself with a name that is not directly linked to th
 * Liquibase
 * Swagger
 * Lombok
+* Jackson, JSON
 
 ## To Build
 Run in the root directory of this project:
