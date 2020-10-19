@@ -16,7 +16,7 @@ Google isn't supposed to index branches other than master and main, that's why m
 - Writable User's HOME (~/) directory
 
 ## Technologies Used
-* Java 9
+* Java
 * Spring 
     * Spring-Core
     * Spring-Boot
