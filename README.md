@@ -3,9 +3,10 @@
 This backend application manages reservations of a camping site which has _N_ spots (_N_=3 by default).
 It provides REST API for interacting with clients.
 
-## Git repository and default branch names
-I wanted to make my solution public, but at the same time to not advertise what it contains.
-Google isn't supposed to index branches other than master and main, that's why my only branch has been called 'prime'. 
+## Git Repository and Default Branch Names
+I wanted to store my solution in a public GitHub repository to easily share it with reviewers, but to make it unsearchable for confidentiality of the home test.
+Google isn't supposed to index branches other than 'master' and 'main', that's why my only branch has been called 'prime'. 
+I also named the repository itself with a name that is not directly linked to the home test.
 
 ## System Requirements to Build the Application:
 
