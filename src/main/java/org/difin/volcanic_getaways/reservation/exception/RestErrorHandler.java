@@ -4,10 +4,13 @@ import org.difin.volcanic_getaways.reservation.model.response.ErrorModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,9 +19,13 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Locale;
 
 @ControllerAdvice
 public class RestErrorHandler extends ResponseEntityExceptionHandler  {
+
+    @Autowired
+    private MessageSource messageSource;
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -41,7 +48,17 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler  {
     @ExceptionHandler(value = {JpaSystemException.class})
     protected ResponseEntity<Object> handleJpaSystemException(JpaSystemException e, WebRequest request) {
 
-        ErrorModel errorModel = new ErrorModel(e);
+        ErrorModel errorModel = new ErrorModel(messageSource.getMessage("volcanic_getaways.exception.jpa",
+                null, null, Locale.getDefault()), e);
+
+        return new ResponseEntity(errorModel, new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = {ObjectOptimisticLockingFailureException.class})
+    protected ResponseEntity<Object> handleOptimisticLockingException(ObjectOptimisticLockingFailureException e, WebRequest request) {
+
+        ErrorModel errorModel = new ErrorModel(messageSource.getMessage("volcanic_getaways.exception.jpa",
+                        null, null, Locale.getDefault()), e);
 
         return new ResponseEntity(errorModel, new HttpHeaders(), HttpStatus.CONFLICT);
     }

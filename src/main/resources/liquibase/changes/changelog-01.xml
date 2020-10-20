@@ -12,6 +12,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="MANAGED_DATE_PK"/>
             </column>
             <column name="DATE" type="DATE"/>
+            <column name="VERSION" type="BIGINT"/>
         </createTable>
     </changeSet>
 

@@ -1,7 +1,7 @@
 package org.difin.volcanic_getaways.reservation.service.availability;
 
 import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
-import org.difin.volcanic_getaways.reservation.data.repository.ManagedDateRepository;
+import org.difin.volcanic_getaways.reservation.data.repository.CustomManagedDateRepository;
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
 import org.difin.volcanic_getaways.reservation.model.response.AvailableDateModel;
@@ -11,17 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifierService {
 
-    private ManagedDateRepository managedDateRepository;
+    private CustomManagedDateRepository customManagedDateRepository;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
 
@@ -31,48 +28,33 @@ public class AvailableDatesVerifierServiceImpl implements AvailableDatesVerifier
     private int spotsNum;
 
     @Autowired
-    public AvailableDatesVerifierServiceImpl(ManagedDateRepository managedDateRepository,
-                                  ReactiveExecutionService reactiveExecutionService,
-                                  ModelConverter modelConverter) {
+    public AvailableDatesVerifierServiceImpl(CustomManagedDateRepository customManagedDateRepository,
+                                             ReactiveExecutionService reactiveExecutionService,
+                                             ModelConverter modelConverter) {
 
-        this.managedDateRepository = managedDateRepository;
+        this.customManagedDateRepository = customManagedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
         this.modelConverter = modelConverter;
     }
 
-    public Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDatesOptional) {
+    public Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDatesOptional, boolean lock) {
 
-        return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDatesOptional))
+        return reactiveExecutionService.exec(() -> getAvailableDatesBlocking(requestDatesOptional, lock))
                 .flatMapIterable(t -> t)
                 .map(modelConverter::managedDateEntityToDTO);
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates, boolean lock) {
 
         LOGGER.debug("getAvailableDatesBlocking - enter; for range=" + requestDates.getArrival() + "," + requestDates.getDeparture());
 
         List<ManagedDate> result =
-            managedDateRepository.getAvailableDates(spotsNum,
+            customManagedDateRepository.getAvailableDates(spotsNum,
                 requestDates.getArrival(),
-                requestDates.getDeparture().minusDays(1));
+                requestDates.getDeparture().minusDays(1), lock);
 
         LOGGER.debug("getAvailableDatesBlocking - exit; found " + result.size() + " available dates");
 
         return result;
-    }
-
-    @Transactional(propagation=MANDATORY, timeout=3)
-    public List<ManagedDate> lockDatesBlocking(RequestDates requestDates) {
-
-        LOGGER.trace("lockDatesBlocking - enter");
-
-        List<ManagedDate> dates =
-                managedDateRepository.lockDates(
-                        requestDates.getArrival(),
-                        requestDates.getDeparture().minusDays(1));
-
-        LOGGER.trace("lockDatesBlocking - exit");
-
-        return dates;
     }
 }

@@ -25,16 +25,12 @@ public class ManagedDatesFacadeImpl implements ManagedDatesFacade {
         this.managedDatesCreationBatchService = managedDatesCreationBatchService;
     }
 
-    public Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates) {
-        return availableDatesVerifierService.getAvailableDatesReactive(requestDates);
+    public Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates, boolean lock) {
+        return availableDatesVerifierService.getAvailableDatesReactive(requestDates, lock);
     }
 
-    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates) {
-        return availableDatesVerifierService.getAvailableDatesBlocking(requestDates);
-    }
-
-    public List<ManagedDate> lockDatesBlocking(RequestDates requestDates) {
-        return availableDatesVerifierService.lockDatesBlocking(requestDates);
+    public List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates, boolean lock) {
+        return availableDatesVerifierService.getAvailableDatesBlocking(requestDates, lock);
     }
 
     public void generateManagedDatesBlocking() {

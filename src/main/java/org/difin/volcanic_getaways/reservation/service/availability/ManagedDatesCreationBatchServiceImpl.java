@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-
 @Service
 public class ManagedDatesCreationBatchServiceImpl implements ManagedDatesCreationBatchService {
 

@@ -2,7 +2,6 @@ package org.difin.volcanic_getaways.reservation.service.reservation;
 
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
-import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
 import org.difin.volcanic_getaways.reservation.exception.ReservationNotFoundException;
 import org.difin.volcanic_getaways.reservation.model.request.BookingReferencePayload;
 import org.difin.volcanic_getaways.reservation.service.common.ReactiveExecutionService;
@@ -24,7 +23,6 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 public class CancellationServiceImpl implements CancellationService {
 
     private ReservationRepository reservationRepository;
-    private ReservedDateRepository reservedDateRepository;
     private ReactiveExecutionService reactiveExecutionService;
     private MessageSource messageSource;
 
@@ -32,11 +30,9 @@ public class CancellationServiceImpl implements CancellationService {
 
     @Autowired
     public CancellationServiceImpl(ReservationRepository reservationRepository,
-                                   ReservedDateRepository reservedDateRepository,
                                    ReactiveExecutionService reactiveExecutionService,
                                    MessageSource messageSource){
         this.reservationRepository = reservationRepository;
-        this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
         this.messageSource = messageSource;
     }
@@ -59,8 +55,14 @@ public class CancellationServiceImpl implements CancellationService {
         reservation
                 .ifPresentOrElse(
                         (r) -> {
-                            r.getReservedDates()
-                                    .forEach(t -> reservedDateRepository.deleteById(t.getId()));
+
+//                            removed automatically via cascade in reservation entity
+//
+//                            r.getReservedDates()
+//                                    .forEach(t -> {
+//                                        LOGGER.debug("deleting reservedDate with id = " + t.getId());
+//                                        reservedDateRepository.deleteById(t.getId());
+//                                    });
 
                             reservationRepository.deleteById(r.getId());
                         },

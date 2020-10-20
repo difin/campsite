@@ -13,6 +13,7 @@
             </column>
             <column name="MANAGED_DATE_ID" type="INT"/>
             <column name="RESERVATION_ID" type="INT"/>
+            <column name="VERSION" type="BIGINT"/>
         </createTable>
     </changeSet>
 

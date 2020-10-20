@@ -21,23 +21,30 @@ public class ErrorModel {
 
     public ErrorModel(Exception e){
         errors = new ArrayList<>();
-        Error error = new Error(e);
+        Error error = new Error(e, null);
         errors.add(error);
     }
 
     public ErrorModel(String message){
         errors = new ArrayList<>();
-        Error error = new Error(message);
+        Error error = new Error(message, null);
         errors.add(error);
     }
 
-    public void addError(Exception e){
-        Error error = new Error(e);
+    public ErrorModel(String message, String detail){
+        errors = new ArrayList<>();
+        Error error = new Error(message, detail);
+        errors.add(error);
+    }
+
+    public ErrorModel(String message, Exception e){
+        errors = new ArrayList<>();
+        Error error = new Error(message, e.getMessage());
         errors.add(error);
     }
 
     public void addError(String message){
-        Error error = new Error(message);
+        Error error = new Error(message, "");
         errors.add(error);
     }
 }

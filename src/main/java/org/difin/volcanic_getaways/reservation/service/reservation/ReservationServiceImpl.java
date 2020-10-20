@@ -72,9 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
                 ", arrival=" + payload.getBookingDates().getArrival() + ", departure=" + payload.getBookingDates().getDeparture() + "]" +
                 "; bookingRef=" + bookingRef + "]");
 
-        managedDatesFacade.lockDatesBlocking(payload.getBookingDates());
-
-        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(payload.getBookingDates());
+        List<ManagedDate> availableDates = managedDatesFacade.getAvailableDatesBlocking(payload.getBookingDates(), true);
 
         if (DAYS.between(payload.getBookingDates().getArrival(), payload.getBookingDates().getDeparture()) > availableDates.size()){
 

@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface AvailableDatesVerifierService {
 
-    Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates);
-    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates);
-    List<ManagedDate> lockDatesBlocking(RequestDates requestDates);
+    Flux<AvailableDateModel> getAvailableDatesReactive(RequestDates requestDates, boolean lock);
+    List<ManagedDate> getAvailableDatesBlocking(RequestDates requestDates, boolean lock);
 }

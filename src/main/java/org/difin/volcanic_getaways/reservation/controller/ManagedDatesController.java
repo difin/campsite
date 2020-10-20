@@ -45,6 +45,6 @@ public class ManagedDatesController {
 							new RequestDates(
 									arrival == null ? LocalDate.now().plusDays(1) : arrival,
 									departure == null ? LocalDate.now().plusMonths(1).plusDays(1) : departure
-							)));
+							)), false);
 	}
 }

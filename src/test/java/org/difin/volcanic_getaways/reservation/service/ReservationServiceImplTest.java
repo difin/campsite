@@ -72,7 +72,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates, true)).thenReturn(availableDates);
 
         Reservation actual = reservationService.makeReservationBlocking(payload, Optional.of(bookingRef));
 
@@ -96,7 +96,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates, true)).thenReturn(availableDates);
 
         Assertions.assertThrows(RequestedRangeIsBookedException.class, () ->
                 reservationService.makeReservationBlocking(payload, Optional.of(bookingRef)));
@@ -112,7 +112,7 @@ class ReservationServiceImplTest {
         BookingDates bookingDates = new BookingDates(arrival, departure);
         ReservationPayload payload = ReservationPayload.builder().name(name).email(email).bookingDates(bookingDates).build();
 
-        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates)).thenReturn(availableDates);
+        when(managedDatesFacade.getAvailableDatesBlocking(bookingDates, true)).thenReturn(availableDates);
 
         Assertions.assertThrows(RequestedRangeIsBookedException.class, () ->
                 reservationService.makeReservationBlocking(payload, Optional.of(bookingRef)));

@@ -14,6 +14,7 @@
             <column name="NAME" type="VARCHAR(255)"/>
             <column name="EMAIL" type="VARCHAR(255)"/>
             <column name="BOOKING_REF" type="VARCHAR(255)"/>
+            <column name="VERSION" type="BIGINT"/>
         </createTable>
     </changeSet>
 

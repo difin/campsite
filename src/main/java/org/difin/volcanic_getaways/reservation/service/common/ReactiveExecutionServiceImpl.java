@@ -20,7 +20,7 @@ public class ReactiveExecutionServiceImpl implements ReactiveExecutionService {
         this.transactionTemplate = transactionTemplate;
         this.scheduler = scheduler;
 
-        transactionTemplate.setTimeout(2);
+        transactionTemplate.setTimeout(3);
     }
 
     public <T> Mono<T> execTransaction(Supplier<T> executable){
