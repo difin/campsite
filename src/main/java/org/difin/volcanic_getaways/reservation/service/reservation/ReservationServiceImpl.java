@@ -4,7 +4,6 @@ import org.difin.volcanic_getaways.reservation.data.entity.ManagedDate;
 import org.difin.volcanic_getaways.reservation.data.entity.Reservation;
 import org.difin.volcanic_getaways.reservation.data.entity.ReservedDate;
 import org.difin.volcanic_getaways.reservation.data.repository.ReservationRepository;
-import org.difin.volcanic_getaways.reservation.data.repository.ReservedDateRepository;
 import org.difin.volcanic_getaways.reservation.exception.RequestedRangeIsBookedException;
 import org.difin.volcanic_getaways.reservation.model.ModelConverter;
 import org.difin.volcanic_getaways.reservation.model.request.RequestDates;
@@ -23,10 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.transaction.annotation.Propagation.REQUIRED;
@@ -35,7 +31,6 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 public class ReservationServiceImpl implements ReservationService {
 
     private ReservationRepository reservationRepository;
-    private ReservedDateRepository reservedDateRepository;
     private ManagedDatesFacade managedDatesFacade;
     private ReactiveExecutionService reactiveExecutionService;
     private ModelConverter modelConverter;
@@ -45,7 +40,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository,
-                                  ReservedDateRepository reservedDateRepository,
                                   ManagedDatesFacade managedDatesFacade,
                                   ReactiveExecutionService reactiveExecutionService,
                                   ModelConverter modelConverter,
@@ -53,7 +47,6 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationRepository = reservationRepository;
         this.modelConverter = modelConverter;
         this.managedDatesFacade = managedDatesFacade;
-        this.reservedDateRepository = reservedDateRepository;
         this.reactiveExecutionService = reactiveExecutionService;
         this.messageSource = messageSource;
     }
@@ -94,17 +87,21 @@ public class ReservationServiceImpl implements ReservationService {
                 () -> reservation.setBookingRef(UUID.randomUUID().toString())
         );
 
-        reservationRepository.save(reservation);
+        List<ReservedDate> reservedDates = new ArrayList<>();
 
         availableDates
                 .forEach(managedDate -> {
-                            ReservedDate reservedDate = new ReservedDate();
-                            reservedDate.setManagedDate(managedDate);
-                            reservedDate.setReservation(reservation);
+                        ReservedDate reservedDate = new ReservedDate();
 
-                            reservedDateRepository.save(reservedDate);
-                        }
+                        reservedDate.setManagedDate(managedDate);
+                        reservedDate.setReservation(reservation);
+
+                        reservedDates.add(reservedDate);
+                    }
                 );
+
+        reservation.setReservedDates(reservedDates);
+        reservationRepository.save(reservation);
 
         LOGGER.debug("makeReservationBlocking - exit; client=[" + payload.getName() + "], bookingRef=" + reservation.getBookingRef());
 

@@ -44,7 +44,7 @@ public class ErrorModel {
     }
 
     public void addError(String message){
-        Error error = new Error(message, "");
+        Error error = new Error(message, null);
         errors.add(error);
     }
 }

@@ -10,27 +10,23 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "MANAGED_DATE")
 public class ManagedDate {
 
 	@Id
-	@Getter
-	@Setter
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "managed_date_seq")
 	@SequenceGenerator(name = "managed_date_seq", sequenceName = "managed_date_id_seq", allocationSize = 1)
 	@Column(nullable = false, insertable = false, updatable = false)
 	private int id;
 
-	@Getter
-	@Setter
 	@Column(nullable = false)
 	private LocalDate date;
 
-	@Getter
 	@Version
 	private Integer version;
 
-	@Getter
-	@OneToMany(mappedBy = "managedDate", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "managedDate", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ReservedDate> reservedDates;
 }

@@ -24,10 +24,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,8 +58,8 @@ class ReservationServiceImplTest {
 
     List<ManagedDate> availableDates = new ArrayList<>();
 
-    @DisplayName("When making a reservation and requested dates are available then these dates are " +
-            "stored in reserved_dates table and booking reference number is returned")
+    @DisplayName("When making a reservation and requested dates are available then reservation is persisted in database" +
+            " and booking reference number is returned")
     @Test
     void allRequestedDatesAvailableTest(){
 
@@ -77,12 +75,7 @@ class ReservationServiceImplTest {
         Reservation actual = reservationService.makeReservationBlocking(payload, Optional.of(bookingRef));
 
         ArgumentCaptor<ReservedDate> argumentCaptor = ArgumentCaptor.forClass(ReservedDate.class);
-        verify(reservedDateRepository, times(3)).save(argumentCaptor.capture());
-
-        List<ManagedDate> reservedDates = argumentCaptor.getAllValues()
-                .stream().map(ReservedDate::getManagedDate).collect(Collectors.toList());
-
-        assertTrue(reservedDates.containsAll(availableDates));
+        verify(reservationRepository, times(1)).save(any());
 
         assertEquals(bookingRef, actual.getBookingRef());
         assertEquals(name, actual.getName());

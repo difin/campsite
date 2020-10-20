@@ -54,18 +54,7 @@ public class CancellationServiceImpl implements CancellationService {
 
         reservation
                 .ifPresentOrElse(
-                        (r) -> {
-
-//                            removed automatically via cascade in reservation entity
-//
-//                            r.getReservedDates()
-//                                    .forEach(t -> {
-//                                        LOGGER.debug("deleting reservedDate with id = " + t.getId());
-//                                        reservedDateRepository.deleteById(t.getId());
-//                                    });
-
-                            reservationRepository.deleteById(r.getId());
-                        },
+                        (r) -> reservationRepository.deleteById(r.getId()),
                         () -> {
 
                             LOGGER.debug("cancelReservationBlocking: reservation not found by booking reference");
